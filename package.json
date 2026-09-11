@@ -1,0 +1,22 @@
+{
+  "name": "cl-urgencia-ig",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Herramientas de build local de la Guía de Implementación FHIR de Urgencia (MINSAL)",
+  "license": "UNLICENSED",
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "doctor": "node scripts/ig.mjs doctor",
+    "sushi": "sushi build .",
+    "publisher": "node scripts/ig.mjs publisher",
+    "build": "npm run sushi && node scripts/ig.mjs build",
+    "serve": "node scripts/ig.mjs serve",
+    "clean": "node scripts/ig.mjs clean"
+  },
+  "devDependencies": {
+    "fsh-sushi": "3.20.1"
+  }
+}
