@@ -3,6 +3,7 @@ Id: tipo-documento-dau
 Title: "Tipo de documento DAU"
 Description: "Tipos de documentos clínicos del dominio de urgencia."
 * ^status = #draft
+* ^experimental = true
 * ^content = #complete
 * ^caseSensitive = true
 * #dau "Datos de Atención de Urgencia"
@@ -12,6 +13,7 @@ Id: secciones-dau
 Title: "Secciones del documento DAU"
 Description: "Secciones clínicas del documento de atención de urgencia."
 * ^status = #draft
+* ^experimental = true
 * ^content = #complete
 * ^caseSensitive = true
 * #resumen "Resumen de la atención"
@@ -28,6 +30,7 @@ Id: condicion-egreso-dau
 Title: "Condición de egreso DAU"
 Description: "Condiciones de cierre de una atención de urgencia."
 * ^status = #draft
+* ^experimental = true
 * ^content = #complete
 * ^caseSensitive = true
 * #alta "Alta"
@@ -42,6 +45,7 @@ Id: tipo-diagnostico-dau
 Title: "Tipo de diagnóstico DAU"
 Description: "Clasificación funcional de los diagnósticos registrados."
 * ^status = #draft
+* ^experimental = true
 * ^content = #complete
 * ^caseSensitive = true
 * #hipotesis "Hipótesis diagnóstica"

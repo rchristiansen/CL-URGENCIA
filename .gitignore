@@ -1,16 +1,19 @@
 .DS_Store
 Thumbs.db
+package-lock.json
 /fsh-generated
 /input-cache
 /output
 /temp
 /template
+/node_modules
 
 # Archivos pesados y ejecutables de FHIR
 *.jar
 *.zip
 *.tar.gz
 *.exe
+*.ruby-version
 
 # Archivos de entorno y credenciales
 .env
