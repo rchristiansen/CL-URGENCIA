@@ -1,3 +1,4 @@
+| `Observation` | Observaciones clínicas, signos vitales y mediciones. |
 # Arquitectura de interoperabilidad
 
 ## Jerarquía normativa
@@ -83,7 +84,7 @@ Un `Bundle.type = transaction` puede utilizarse para registrar múltiples recurs
 | `Practitioner` | Identificación del profesional. |
 | `PractitionerRole` | Profesión, rol, especialidad y organización. |
 | `Condition` | Antecedentes, hipótesis y diagnósticos. |
-| `Observation` | Categorización, signos vitales y mediciones. |
+| `Observation` | signos vitales y mediciones. |
 | `Procedure` | Procedimientos realizados. |
 | `ServiceRequest` | Solicitudes de exámenes, procedimientos y derivaciones. |
 | `MedicationAdministration` | Medicamentos administrados. |
@@ -128,7 +129,6 @@ La consulta terminológica se realiza validación de identidad del paciente con 
 
 Se validan:
 
-- Códigos de categorización.
 - Procedencia.
 - Medio de llegada.
 - Diagnósticos CIE-10.
@@ -138,7 +138,7 @@ Se validan:
 - Procedimientos SNOMED CT.
 - Prestaciones FONASA.
 - Medicamentos del catálogo nacional.
-- Condiciones y destinos de egreso.
+- Condiciones y destinos de egreso, incluido NEA.
 
 ## Identidad institucional y profesional
 

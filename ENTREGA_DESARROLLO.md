@@ -1,3 +1,4 @@
+| HIS/RCE del establecimiento | El flujo comienza con la información de admisión, identificación, evaluación clínica, observaciones, diagnósticos, solicitudes, tratamientos, procedimientos y egreso. |
 # Notas de continuidad de desarrollo
 
 Documento de traspaso: qué está resuelto, qué está decidido pero no implementado y qué sigue abierto en la Guía de Implementación FHIR de Urgencia — Datos de Atención de Urgencia (DAU). Complementa el `README.md` —qué es la guía— y la página *Historial de cambios* del sitio publicado —qué cambió en cada versión—.
@@ -26,7 +27,7 @@ Estas decisiones deben conservarse mientras no exista un acuerdo técnico o clí
 1. **El alcance inicial se centra en el documento clínico DAU.** La guía representa la información clínica de una atención de urgencia al finalizar o cerrar el episodio.
 2. **El DAU se representa como un documento FHIR R4.** La estructura principal es un `Bundle` con `type = document` y una `Composition` como primera entrada.
 3. **El modelo lógico es independiente del formato de entrada.** El establecimiento puede enviar FHIR R4 directamente o HL7 v2 para que el Bus o un adaptador lo transforme al modelo FHIR.
-4. **El HIS/RCE del establecimiento es el origen de la información clínica.** El flujo comienza con la información de admisión, identificación, categorización, observaciones, diagnósticos, solicitudes, tratamientos, procedimientos y egreso.
+4. **El HIS/RCE del establecimiento es el origen de la información clínica.** El flujo comienza con la información de admisión, identificación, observaciones, diagnósticos, solicitudes, tratamientos, procedimientos y egreso.
 5. **El Bus consulta terminología y valida identidad.** El flujo contempla la transformación a FHIR, la consulta terminológica y la validación del paciente mediante MPI antes de publicar.
 6. **El Portal Ciudadano es un consumidor posterior.** No participa en la generación ni transformación del documento DAU.
 7. **Las solicitudes se representan con `ServiceRequest`.** Las solicitudes de laboratorio e imagenología se incorporan únicamente cuando fueron realizadas durante el episodio.
@@ -46,7 +47,7 @@ Estas decisiones deben conservarse mientras no exista un acuerdo técnico o clí
 
 ### Terminología e identidad
 
-- Confirmar los ValueSets nacionales para categorización, diagnósticos CIE-10, procedimientos, medicamentos, destinos y estados.
+- Confirmar los ValueSets nacionales para diagnósticos CIE-10, procedimientos, medicamentos, destinos y estados.
 - Definir los sistemas de códigos nacionales y locales que deben conservarse junto con los textos originales.
 - Formalizar la dependencia técnica con los paquetes y transacciones oficiales de MPI cuando estén disponibles.
 - Definir la respuesta del Bus cuando la identidad del paciente o un código no pueda validarse.
@@ -60,7 +61,7 @@ El mapeo inicial propuesto es:
 |---|---|---|
 | `PID` | `Patient` | Identificación y datos demográficos. |
 | `PV1` / `EVN` | `Encounter` | Episodio, tipo, fechas, ubicación y estado. |
-| `OBX` | `Observation` | Signos vitales, categorización y observaciones clínicas. |
+| `OBX` | `Observation` | Signos vitales y observaciones clínicas. |
 | `DG1` | `Condition` | Diagnósticos e hipótesis diagnósticas. |
 | `ORC` / `OBR` | `ServiceRequest` | Solicitudes de laboratorio, imagenología, procedimientos o derivaciones. |
 | `PR1` | `Procedure` | Procedimientos realizados. |

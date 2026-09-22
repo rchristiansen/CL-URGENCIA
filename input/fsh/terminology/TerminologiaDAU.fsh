@@ -18,7 +18,6 @@ Description: "Secciones clínicas del documento de atención de urgencia."
 * ^caseSensitive = true
 * #resumen "Resumen de la atención"
 * #admision "Admisión e identificación"
-* #categorizacion "Categorización y signos vitales"
 * #atencion "Atención clínica"
 * #diagnosticos "Diagnósticos"
 * #solicitudes "Solicitudes de exámenes y procedimientos"
@@ -28,7 +27,7 @@ Description: "Secciones clínicas del documento de atención de urgencia."
 CodeSystem: CondicionEgresoDAU
 Id: condicion-egreso-dau
 Title: "Condición de egreso DAU"
-Description: "Condiciones de cierre de una atención de urgencia."
+Description: "Condiciones de cierre de una atención de urgencia, incluyendo alta, hospitalización, traslado y NEA."
 * ^status = #draft
 * ^experimental = true
 * ^content = #complete
@@ -36,8 +35,7 @@ Description: "Condiciones de cierre de una atención de urgencia."
 * #alta "Alta"
 * #hospitalizacion "Hospitalización"
 * #traslado "Traslado o derivación"
-* #abandono "Abandono"
-* #nea "No espera atención"
+* #nea "NEA"
 * #fallecido "Fallecido"
 
 CodeSystem: TipoDiagnosticoDAU

@@ -1,8 +1,14 @@
+La guía permite recibir información desde sistemas que generan recursos FHIR R4 y establece un modelo clínico interoperable común para la atención de urgencia. Este modelo incluye la identificación del paciente, el episodio de atención, la evaluación clínica, las observaciones clínicas, los diagnósticos, las solicitudes, los procedimientos, los tratamientos y el egreso.
+| Fase 1 | Documento DAU al egreso, identificación del paciente, episodio de atención, motivo de consulta, evaluación clínica, signos vitales, diagnósticos, solicitudes, tratamientos, procedimientos, destino e indicaciones de alta, NEA | Perfiles y ejemplo documental implementados; pendientes de validación clínica e institucional |
+| `ObservacionUrgenciaDAU` | Observation | Signos vitales, escalas y otras observaciones clínicas. |
+| Arquitectura | Sistemas participantes, flujo HIS/RCE–Bus, terminología, MPI, NID y publicación. |
+| Terminología | Diagnósticos, procedimientos, estados de egreso, NEA y códigos clínicos. |
+- Terminologías clínicas aplicables a diagnósticos, procedimientos, medicamentos, destinos, NEA y estados de atención.
 # Guía de Implementación FHIR - Urgencia (DAU)
 
 Guía de Implementación (IG) FHIR R4 para el intercambio del Documento de Atención de Urgencia (DAU) en Chile. Define la representación de la atención de urgencia, desde la información clínica registrada en el HIS/RCE del establecimiento hasta su validación e interoperabilidad mediante el Bus de Interoperabilidad de MINSAL.
 
-La guía permite recibir información desde sistemas que generan recursos FHIR R4 y establece un modelo clínico interoperable común para la atención de urgencia. Este modelo incluye la identificación del paciente, el episodio de atención, la categorización, las observaciones clínicas, los diagnósticos, las solicitudes, los procedimientos, los tratamientos y el egreso.
+La guía permite recibir información desde sistemas que generan recursos FHIR R4 y establece un modelo clínico interoperable común para la atención de urgencia. Este modelo incluye la identificación del paciente, el episodio de atención, las observaciones clínicas, los diagnósticos, las solicitudes, los procedimientos, los tratamientos y el egreso.
 
 Las solicitudes de laboratorio e imagenología realizadas durante el episodio pueden representarse mediante `ServiceRequest` cuando existan.
 
@@ -25,7 +31,7 @@ El modelo lógico del DAU es  FHIR R4.
 
 | Fase | Contenido | Estado |
 |---|---|---|
-| Fase 1 | Documento DAU al egreso, identificación del paciente, episodio de atención, categorización, motivo de consulta, signos vitales, diagnósticos, solicitudes, tratamientos, procedimientos, destino e indicaciones de alta | Perfiles y ejemplo documental implementados; pendientes de validación clínica e institucional |
+| Fase 1 | Documento DAU al egreso, identificación del paciente, episodio de atención, motivo de consulta, signos vitales, diagnósticos, solicitudes, tratamientos, procedimientos, destino e indicaciones de alta | Perfiles y ejemplo documental implementados; pendientes de validación clínica e institucional |
 | Fuera del alcance actual | Procesos pertenecientes a otras guías de dominio | Se gestionan mediante sus respectivos flujos de interoperabilidad |
 
 El alcance prioriza la información clínica necesaria para interoperar y permitir la consulta posterior del DAU.
@@ -44,7 +50,7 @@ El documento DAU se representa mediante un `Bundle.type = document` y una `Compo
 | `BundleDocumentoDAU` | Bundle | Contenedor FHIR del documento; su primera entrada debe ser la `Composition`. |
 | `DauPatient` | Patient | Identificación del paciente de la atención, basado en CL-Core. |
 | `DauEncounter` | Encounter | Episodio de atención de urgencia, fechas, estado, establecimiento y egreso. |
-| `ObservacionUrgenciaDAU` | Observation | Categorización, signos vitales y otras observaciones clínicas. |
+| `ObservacionUrgenciaDAU` | Observation | signos vitales y otras observaciones clínicas. |
 | `DiagnosticoUrgenciaDAU` | Condition | Hipótesis y diagnósticos registrados durante la atención. |
 | `SolicitudUrgenciaDAU` | ServiceRequest | Solicitudes de laboratorio, imagenología, procedimientos o derivaciones. |
 | `ProcedimientoUrgenciaDAU` | Procedure | Procedimientos realizados durante la atención. |
@@ -92,7 +98,7 @@ El documento puede contener recursos asociados como:
 | Arquitectura | Sistemas participantes, flujo HIS/RCE–Bus, transformación, terminología, MPI, NID y publicación. |
 | Casos de uso | Actores, puntos de integración y flujo de intercambio del documento DAU. |
 | Estructura del DAU | `Bundle.type=document`, `Composition` y recursos asociados. |
-| Terminología | Categorización, diagnósticos, procedimientos, estados, destinos y códigos clínicos. |
+| Terminología | diagnósticos, procedimientos, estados, destinos y códigos clínicos. |
 | Validaciones | Reglas de identidad, obligatoriedad, consistencia y validación terminológica. |
 | Historial de cambios | Cambios técnicos y funcionales por versión. |
 
@@ -151,7 +157,7 @@ Esta guía se construye a partir de:
 - Lineamientos de interoperabilidad HL7 FHIR R4 de MINSAL.
 - CL-Core `1.9.3`.
 - Guías de Implementación FHIR de referencia de Laboratorio Clínico e Imagenología, utilizadas como referencia para las solicitudes y la interoperabilidad entre dominios.
-- Terminologías clínicas aplicables a categorización, diagnósticos, procedimientos, medicamentos, destinos y estados de atención.
+- Terminologías clínicas aplicables a diagnósticos, procedimientos, medicamentos, destinos y estados de atención.
 
 ## Contacto
 

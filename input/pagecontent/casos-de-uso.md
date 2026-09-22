@@ -48,13 +48,14 @@ sequenceDiagram
 |---|---|
 | Admisión | Identificador DAU, código DEIS, fecha de admisión, procedencia y medio de llegada. |
 | Paciente | RUN, pasaporte u otro identificador, nombre, fecha de nacimiento, sexo y contacto. |
-| Categorización | Sistema utilizado, nivel asignado, fecha/hora y profesional. |
+| Sistema utilizado, nivel asignado, fecha/hora y profesional. |
+| Evaluación clínica | Anamnesis, examen físico, antecedentes, alergias y evolución clínica. |
 | Signos vitales | Frecuencia cardíaca, presión arterial, temperatura, frecuencia respiratoria, saturación, dolor, Glasgow y glicemia. |
-| Atención clínica | Anamnesis, examen físico, antecedentes, alergias y evolución clínica. |
+| Egreso | Condición, destino, hospitalización, traslado o NEA. |
 | Diagnósticos | Hipótesis, diagnóstico principal, diagnósticos secundarios, código y descripción. |
 | Solicitudes | Exámenes de laboratorio, imagenología, procedimientos o derivaciones solicitadas durante el episodio. |
 | Tratamientos | Medicamentos administrados, indicaciones y procedimientos realizados. |
-| Egreso | Condición, destino, hospitalización, traslado, abandono, NEA o fallecimiento. |
+| Egreso | Condición, destino, hospitalización, traslado o NEA. |
 | Documento | Autor, fecha de emisión y PDF cuando corresponda. |
 
 ## Caso de uso 1: Envío FHIR directo

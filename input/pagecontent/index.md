@@ -22,8 +22,9 @@ Esta primera versión contempla:
 - Fecha y hora de admisión.
 - Procedencia y medio de llegada.
 - Motivo de consulta.
-- Categorización y recategorizaciones.
+- Evaluación clínica disponible.
 - Signos vitales y observaciones clínicas.
+- Condición y destino de egreso, incluido NEA.
 - Anamnesis, antecedentes y alergias.
 - Diagnósticos e hipótesis diagnósticas.
 - Solicitudes de exámenes y procedimientos.

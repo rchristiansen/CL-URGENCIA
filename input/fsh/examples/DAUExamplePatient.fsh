@@ -37,5 +37,6 @@ Description: "Encuentro de atención de urgencia utilizado como ejemplo."
 * participant[0].type[0].coding[0].code = #PPRF
 * participant[0].individual = Reference(DAUExamplePractitioner)
 * length = 120 'min'
+* hospitalization.dischargeDisposition = CondicionEgresoDAU#nea
 * reasonCode.text = "Dolor abdominal"
 * serviceProvider = Reference(DAUExampleOrganization)

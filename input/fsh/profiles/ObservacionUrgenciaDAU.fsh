@@ -2,10 +2,9 @@ Profile: ObservacionUrgenciaDAU
 Parent: Observation
 Id: observacion-urgencia-dau
 Title: "Observación clínica de urgencia"
-Description: "Categorización, signo vital, escala o medición clínica del DAU."
+Description: "Observación clínica de urgencia para signos vitales, escalas y otras mediciones clínicas."
 
 * status 1..1 MS
-* category 1..1 MS
 * code 1..1 MS
 * subject 1..1 MS
 * subject only Reference(DauPatient)

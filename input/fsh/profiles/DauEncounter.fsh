@@ -2,7 +2,7 @@ Profile: DauEncounter
 Parent: EncounterCL
 Id: dau-encounter
 Title: "DAU - Encuentro de Atención de Urgencia"
-Description: "Perfil utilizado para representar el episodio de atención de urgencia, desde la admisión del paciente hasta el alta. Define los datos esenciales del encuentro clínico y se basa en el perfil EncounterCL de CL-Core (hl7.fhir.cl.clcore), adaptándolo al contexto presencial de urgencia establecido por la Guía de Implementación DAU."
+Description: "Perfil utilizado para representar el episodio de atención de urgencia, desde la admisión del paciente hasta el cierre por alta, traslado o abandono NEA (No Espera Atención). Define los datos esenciales del encuentro clínico y se basa en el perfil EncounterCL de CL-Core (hl7.fhir.cl.clcore), adaptándolo al contexto presencial de urgencia establecido por la Guía de Implementación DAU."
 * ^url = "https://interoperabilidad.minsal.cl/fhir/ig/urgencia/StructureDefinition/dau-encounter"
 * ^status = #draft
 * ^version = "0.1.0"
@@ -36,7 +36,8 @@ Description: "Perfil utilizado para representar el episodio de atención de urge
 
 * hospitalization 0..1
 * hospitalization.dischargeDisposition 0..1
-* hospitalization.dischargeDisposition ^short = "Destino o condición de egreso"
+* hospitalization.dischargeDisposition ^short = "Destino o motivo de término, incluyendo abandono NEA (No Espera Atención)"
+* hospitalization.dischargeDisposition from VSCondicionEgresoDAU (required)
 
 * serviceProvider 1..1
 * serviceProvider only Reference(OrganizacionUrgenciaDAU)

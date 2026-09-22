@@ -4,19 +4,39 @@
 
 Actualización técnica de la Guía de Implementación FHIR R4 para el Documento de Atención de Urgencia (DAU).
 
+### Alcance funcional
+
+- **Eliminación de categorización:** se elimina la categorización y la recategorización del alcance de la versión actual de la guía.
+
+- **Actualización del conjunto mínimo de datos:** se ajusta el conjunto mínimo de datos para excluir categorización y recategorización.
+
+- **Incorporación de NEA:** se incorpora NEA como desenlace válido del episodio de atención de urgencia.
+
+- **Actualización del cierre de atención:** se ajustan los perfiles, ejemplos y documentación para representar episodios cerrados por NEA, incluso cuando no exista diagnóstico o tratamiento.
+
 ### Dependencias
 
 - **Actualización de dependencia:** se actualiza la dependencia `hl7.fhir.cl.clcore` desde `1.8.5` a `1.9.3` en la configuración de la guía y en la documentación asociada.
 
 ### Perfiles
 
-- **Alineación del encuentro con CL-Core:** el perfil `DauEncounter` se mantiene como extensión del perfil `EncounterCL` de `CL-Core`.
+- **Alineación del encuentro con CL-Core:** el perfil `DauEncounter` se mantiene como extensión del perfil `EncounterCL` de `CL-Core` y se ajusta para admitir cierre por NEA.
 
 - **Alineación del diagnóstico con CL-Core:** el perfil `DiagnosticoUrgenciaDAU` pasa a construirse sobre `CoreDiagnosticoCl` para cumplir con las restricciones del perfil nacional usado por el encuentro.
 
+- **Observaciones clínicas:** el perfil `ObservacionUrgenciaDAU` se conserva para signos vitales, escalas y otras observaciones clínicas, sin usarlo para categorización.
+
+### Terminología
+
+- **Secciones del documento DAU:** se elimina la sección de categorización del conjunto de secciones del documento.
+
+- **Condición de egreso DAU:** se mantiene el uso de un código local para NEA como desenlace válido del episodio.
+
 ### Documentación actualizada
 
-- **Gobernanza y narrativa:** se actualizan los documentos de gobernanza, el `README` y las páginas narrativas para reflejar la nueva versión de `CL-Core`.
+- **Gobernanza y narrativa:** se actualizan los documentos de gobernanza, el `README` y las páginas narrativas para reflejar la nueva versión de `CL-Core` y la eliminación de categorización.
+
+- **Ejemplos:** se actualizan los ejemplos del encuentro y del documento para mostrar un cierre por NEA sin diagnóstico ni tratamiento.
 
 
 ## Versión 0.1.1
