@@ -2,7 +2,7 @@
 
 ## Objetivo
 
-Describir el flujo mediante el cual el HIS/RCE envía la información de una atención de urgencia al Bus de Interoperabilidad para su transformación a FHIR R4, validación y publicación.
+Describir el flujo mediante el cual el HIS/RCE envía la información de una atención de urgencia al Bus de Interoperabilidad para validación y publicación.
 
 ## Actores
 
@@ -10,17 +10,15 @@ Describir el flujo mediante el cual el HIS/RCE envía la información de una ate
 |---|---|
 | Establecimiento de origen | Registra y envía la atención de urgencia. |
 | HIS / RCE | Genera la información de admisión, atención, solicitudes y egreso. |
-| Bus de Interoperabilidad | Transforma los datos a FHIR R4 y coordina las validaciones. |
+| Bus de Interoperabilidad | Coordina las validaciones y la publicación. |
 | Servicio Terminológico | Valida códigos, catálogos y unidades de medida. |
-| MPI / NID MINSAL | Valida la identidad del paciente y los identificadores nacionales. |
+| MPI | Valida la identidad del paciente y los identificadores nacionales. |
 | Repositorio FHIR | Conserva el documento DAU y sus recursos. |
 | Portal Ciudadano | Consume la información publicada. |
 
 ## Puntos de integración
 
-1. **Intercambio mediante HL7 FHIR R4:** el sistema clínico de origen, como el HIS o RCE, genera y envía un `Bundle` FHIR R4 de tipo `document`.
-
-El modelo canónico de esta guía es FHIR R4.
+1. **Intercambio mediante el Bus de Interoperabilidad:** el sistema clínico de origen, como el HIS o RCE, genera y envía la información de la atención de urgencia al Bus para su validación y publicación.
 
 ## Flujo general
 
@@ -28,18 +26,15 @@ El modelo canónico de esta guía es FHIR R4.
 sequenceDiagram
     participant HIS as HIS / RCE
     participant BUS as Bus de Interoperabilidad
-    participant FHIR as Transformación FHIR R4
     participant TERM as Servicio Terminológico
-    participant MPI as MPI / NID MINSAL
+    participant MPI as MPI
     participant REP as Repositorio FHIR
     participant POR as Portal Ciudadano
 
-    HIS->>BUS: Bundle FHIR R4
-    BUS->>FHIR: Transformar información de urgencia
-    FHIR-->>BUS: Bundle document canónico
+    HIS->>BUS: Información de atención de urgencia
     BUS->>TERM: Validar códigos y unidades
     TERM-->>BUS: Resultado terminológico
-    BUS->>MPI: Validar Patient contra MPI/NID
+    BUS->>MPI: Validar Patient contra MPI
     MPI-->>BUS: Identidad validada
     BUS->>BUS: Validar perfiles DAU y referencias
     BUS->>REP: Publicar Bundle document y PDF, si existe

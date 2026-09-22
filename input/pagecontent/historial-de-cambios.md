@@ -1,5 +1,24 @@
 # Historial de cambios
 
+## Versión 0.1.2
+
+Actualización técnica de la Guía de Implementación FHIR R4 para el Documento de Atención de Urgencia (DAU).
+
+### Dependencias
+
+- **Actualización de dependencia:** se actualiza la dependencia `hl7.fhir.cl.clcore` desde `1.8.5` a `1.9.3` en la configuración de la guía y en la documentación asociada.
+
+### Perfiles
+
+- **Alineación del encuentro con CL-Core:** el perfil `DauEncounter` se mantiene como extensión del perfil `EncounterCL` de `CL-Core`.
+
+- **Alineación del diagnóstico con CL-Core:** el perfil `DiagnosticoUrgenciaDAU` pasa a construirse sobre `CoreDiagnosticoCl` para cumplir con las restricciones del perfil nacional usado por el encuentro.
+
+### Documentación actualizada
+
+- **Gobernanza y narrativa:** se actualizan los documentos de gobernanza, el `README` y las páginas narrativas para reflejar la nueva versión de `CL-Core`.
+
+
 ## Versión 0.1.1
 
 Actualización técnica de la Guía de Implementación FHIR R4 para el Documento de Atención de Urgencia (DAU).
@@ -80,7 +99,7 @@ Se incorporan los siguientes recursos FHIR para representar el documento DAU y s
 
 ### Dependencias
 
-- Se agrega dependencia con `hl7.fhir.cl.clcore` versión `1.8.5`.
+- Se agrega dependencia con `hl7.fhir.cl.clcore` versión `1.9.3`.
 
 ### Documentación
 

@@ -1,5 +1,5 @@
 Profile: DiagnosticoUrgenciaDAU
-Parent: Condition
+Parent: CoreDiagnosticoCl
 Id: diagnostico-urgencia-dau
 Title: "Diagnóstico de atención de urgencia"
 Description: "Hipótesis o diagnóstico registrado durante la atención de urgencia."

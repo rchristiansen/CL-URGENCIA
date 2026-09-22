@@ -1,12 +1,12 @@
 Profile: DauEncounter
-Parent: Encounter
+Parent: EncounterCL
 Id: dau-encounter
 Title: "DAU - Encuentro de Atención de Urgencia"
-Description: "Perfil que representa una atención de urgencia dentro del proceso de Datos de Atención de Urgencia (DAU)."
+Description: "Perfil utilizado para representar el episodio de atención de urgencia, desde la admisión del paciente hasta el alta. Define los datos esenciales del encuentro clínico y se basa en el perfil EncounterCL de CL-Core (hl7.fhir.cl.clcore), adaptándolo al contexto presencial de urgencia establecido por la Guía de Implementación DAU."
 * ^url = "https://interoperabilidad.minsal.cl/fhir/ig/urgencia/StructureDefinition/dau-encounter"
 * ^status = #draft
 * ^version = "0.1.0"
-* ^publisher = "Hospital Regional de Arica Dr. Juan Noé Crevani"
+
 
 * identifier 1..*
 * identifier ^short = "Identificador de la atención de urgencia"
@@ -16,10 +16,6 @@ Description: "Perfil que representa una atención de urgencia dentro del proceso
 * status 1..1
 * status ^short = "Estado de la atención de urgencia"
 
-* class 1..1
-* class ^short = "Clasificación del tipo de atención"
-* class = http://terminology.hl7.org/CodeSystem/v3-ActCode#EMER
-
 * subject 1..1
 * subject only Reference(DauPatient)
 * subject ^short = "Paciente atendido en urgencia"
@@ -27,7 +23,7 @@ Description: "Perfil que representa una atención de urgencia dentro del proceso
 * period 1..1
 * period.start 1..1
 * period.start ^short = "Fecha y hora de ingreso"
-* period.end 0..1
+* period.end 1..1
 * period.end ^short = "Fecha y hora de término de la atención"
 
 * reasonCode 1..1

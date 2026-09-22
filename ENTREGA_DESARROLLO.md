@@ -10,7 +10,7 @@ La guía se encuentra en estado **draft** y en desarrollo inicial. SUSHI compila
 |---|---|
 | Estructura del proyecto IG | Disponible |
 | Configuración de SUSHI e IG Publisher | Disponible |
-| Perfil de paciente | Implementado mediante `DauPatient` basado en CL-Core 1.8.5 |
+| Perfil de paciente | Implementado mediante `DauPatient` basado en CL-Core 1.9.3 |
 | Modelo documental DAU | Implementado mediante `BundleDocumentoDAU` y `ComposicionDocumentoDAU` |
 | Perfiles clínicos | Implementados como base técnica; pendientes de validación clínica |
 | Solicitudes de laboratorio e imagenología | Representadas mediante `SolicitudUrgenciaDAU` (`ServiceRequest`) cuando existan |
@@ -27,7 +27,7 @@ Estas decisiones deben conservarse mientras no exista un acuerdo técnico o clí
 2. **El DAU se representa como un documento FHIR R4.** La estructura principal es un `Bundle` con `type = document` y una `Composition` como primera entrada.
 3. **El modelo lógico es independiente del formato de entrada.** El establecimiento puede enviar FHIR R4 directamente o HL7 v2 para que el Bus o un adaptador lo transforme al modelo FHIR.
 4. **El HIS/RCE del establecimiento es el origen de la información clínica.** El flujo comienza con la información de admisión, identificación, categorización, observaciones, diagnósticos, solicitudes, tratamientos, procedimientos y egreso.
-5. **El Bus consulta terminología y valida identidad.** El flujo contempla la transformación a FHIR, la consulta terminológica y la validación del paciente mediante MPI/NID antes de publicar.
+5. **El Bus consulta terminología y valida identidad.** El flujo contempla la transformación a FHIR, la consulta terminológica y la validación del paciente mediante MPI antes de publicar.
 6. **El Portal Ciudadano es un consumidor posterior.** No participa en la generación ni transformación del documento DAU.
 7. **Las solicitudes se representan con `ServiceRequest`.** Las solicitudes de laboratorio e imagenología se incorporan únicamente cuando fueron realizadas durante el episodio.
 8. **Las guías de laboratorio e imagenología mantienen sus propios flujos.** El documento DAU no incorpora sus recursos de resultados ni informes.
@@ -48,7 +48,7 @@ Estas decisiones deben conservarse mientras no exista un acuerdo técnico o clí
 
 - Confirmar los ValueSets nacionales para categorización, diagnósticos CIE-10, procedimientos, medicamentos, destinos y estados.
 - Definir los sistemas de códigos nacionales y locales que deben conservarse junto con los textos originales.
-- Formalizar la dependencia técnica con los paquetes y transacciones oficiales de MPI/NID cuando estén disponibles.
+- Formalizar la dependencia técnica con los paquetes y transacciones oficiales de MPI cuando estén disponibles.
 - Definir la respuesta del Bus cuando la identidad del paciente o un código no pueda validarse.
 - Mantener los códigos originales cuando la homologación no sea posible.
 
@@ -83,7 +83,7 @@ Pendientes del mapeo:
 Estas reglas corresponden al procesamiento y no se expresan completamente mediante invariantes FHIR:
 
 - Validar el dígito verificador del RUN y la consistencia de los identificadores del paciente.
-- Resolver o confirmar la identidad mediante MPI/NID antes de publicar el DAU.
+- Resolver o confirmar la identidad mediante MPI antes de publicar el DAU.
 - Consultar y validar los códigos mediante el Servicio Terminológico.
 - Verificar que la primera entrada del Bundle documental sea la `Composition`.
 - Validar la consistencia entre paciente, episodio, establecimiento, profesionales y fechas.
@@ -98,7 +98,7 @@ Estas reglas corresponden al procesamiento y no se expresan completamente median
 2. Definir el conjunto mínimo de datos clínicos y separar los campos obligatorios de los opcionales.
 3. Confirmar la representación de las solicitudes de laboratorio e imagenología dentro del DAU cuando existan.
 4. Definir el repositorio FHIR o mecanismo de publicación que recibirá el documento.
-5. Confirmar el perfil de identidad definitivo y la responsabilidad de cada componente entre HIS/RCE, Bus, MPI/NID y Servicio Terminológico.
+5. Confirmar el perfil de identidad definitivo y la responsabilidad de cada componente entre HIS/RCE, Bus, MPI y Servicio Terminológico.
 6. Validar con los equipos clínicos las reglas de negocio para alta, hospitalización, traslado, abandono y NEA.
 
 ## Cómo retomar el desarrollo

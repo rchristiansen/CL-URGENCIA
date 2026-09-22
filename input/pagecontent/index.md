@@ -8,7 +8,7 @@ Esta Guía de Implementación define el modelo de interoperabilidad para el inte
 
 El objetivo es transformar la información clínica y administrativa registrada durante una atención de urgencia en recursos **HL7 FHIR R4**, validarlos mediante los servicios nacionales de terminología e identidad y publicarlos para su consulta en el Portal Ciudadano.
 
-La guía utiliza FHIR R4 `4.0.1` y CL-Core `1.8.5`. MPI, NID y los catálogos nacionales se consideran dependencias externas pendientes de confirmación y no se declaran todavía como paquetes implementados por esta guía.
+La guía utiliza FHIR R4 `4.0.1` y CL-Core `1.9.3`. MPI, y los catálogos nacionales se consideran dependencias externas pendientes de confirmación y no se declaran todavía como paquetes implementados por esta guía.
 
 Para el detalle de los actores y mensajes, consultar [Casos de uso](casos-de-uso.html).
 
@@ -38,16 +38,15 @@ Esta primera versión contempla:
 
 ## Principio de diseño
 
-La información enviada por el HIS/RCE se transforma primero al modelo canónico FHIR R4. Posteriormente, el Bus consulta el Servicio Terminológico, valida la identidad del paciente contra MPI/NID y publica el resultado.
+La información enviada por el HIS/RCE se transforma primero al modelo canónico FHIR R4. Posteriormente, el Bus consulta el Servicio Terminológico, valida la identidad del paciente contra MPI y publica el resultado.
 
 <div class="mermaid">
 flowchart TD
-    A["HIS / RCE"] -->|"FHIR R4"| B["Transformación FHIR R4"]
-    B --> C["Servicio Terminológico"]
-    C --> D["Validación MPI / NID"]
-    D --> E["Validación DAU"]
-    E --> F["Repositorio FHIR"]
-    F --> G["Portal Ciudadano"]
+    A["RCE/HIS "] -->|"Bundle FHIR R4 tipo document"| B["Bus de Interoperabilidad"]
+    B --> C["Resolución de identidad<br/>MPI"]
+    C --> D["Validación terminológica"]
+    D --> E["Validación contra la<br/>Guía de Implementación DAU"]
+    E --> F["Portal Ciudadano"]
 </div>
 
 ## Modelo documental
@@ -95,8 +94,7 @@ La `Composition` organiza el documento y referencia:
 | Guía | Aplicación |
 |---|---|
 | CL-Core | Perfiles transversales chilenos para paciente, prestador y organización. |
-| MPI/NID MINSAL | Dependencia externa para identidad, pendiente de formalizar mediante paquetes y transacciones oficiales. |
-| Norma 820 | Identificadores, sexo registral, previsión y catálogos nacionales. |
+| MPI | Dependencia para identidad del paciente. |
 | LOINC | Signos vitales, mediciones y resultados observacionales. |
 | SNOMED CT | Procedimientos, conceptos clínicos y hallazgos. |
 | CIE-10 | Diagnósticos registrados al cierre. |

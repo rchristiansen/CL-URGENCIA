@@ -5,11 +5,11 @@
 La arquitectura utiliza:
 
 1. HL7 FHIR R4 `4.0.1`.
-2. CL-Core Chile `1.8.5`.
-3. MPI/NID MINSAL como dependencias externas pendientes de formalización.
+2. CL-Core Chile `1.9.3`.
+3. MPI Para identificación del paciente.
 4. Guía de dominio Datos de Atención de Urgencia (DAU).
 
-La identidad del paciente deberá validarse mediante las transacciones y perfiles oficiales de MPI/NID que se acuerden para la versión normativa.
+La identidad del paciente deberá validarse mediante las transacciones y perfiles oficiales de MPI que se acuerden para la versión normativa.
 
 ## Sistemas participantes
 
@@ -27,12 +27,24 @@ La identidad del paciente deberá validarse mediante las transacciones y perfile
 
 <div class="mermaid">
 flowchart LR
-    HIS["HIS / RCE"] -->|"FHIR R4"| TRANS["Transformación a FHIR R4"]
-    TRANS --> TERM["Servicio Terminológico"]
-    TERM --> MPI["Validación MPI / NID"]
-    MPI --> VAL["Validación perfiles DAU"]
-    VAL --> REP["Repositorio FHIR"]
-    REP --> PORTAL["Portal Ciudadano"]
+    HIS["HIS / RCE"]
+    BUS["Bus de Interoperabilidad"]
+    ESTRUCT["Validación del<br/>Bundle FHIR R4"]
+    GUIA["Validación contra la<br/>Guía de Implementación DAU"]
+    TERM["Validación terminológica"]
+    PORTAL["Portal Ciudadano"]
+    RECHAZO["Rechazo y detalle<br/>del error"]
+
+    HIS -->|"Envía Bundle FHIR R4<br/>tipo document"| BUS
+    BUS --> ESTRUCT
+    ESTRUCT --> GUIA
+    GUIA --> TERM
+    TERM -->|"Documento DAU válido"| PORTAL
+
+    ESTRUCT -.->|"Estructura inválida"| RECHAZO
+    GUIA -.->|"No cumple la guía"| RECHAZO
+    TERM -.->|"Terminología inválida"| RECHAZO
+    RECHAZO -->|"Notifica el rechazo"| HIS
 </div>
 
 ## Modelo de transacción
@@ -80,17 +92,23 @@ Un `Bundle.type = transaction` puede utilizarse para registrar múltiples recurs
 
 ## Secuencia de validación
 
+## Secuencia de validación
+
 <div class="mermaid">
 flowchart TD
-    A["Entrada FHIR R4"] --> B["Bundle FHIR R4"]
-    B --> C["Validación terminológica"]
-    C --> D["Validación Patient contra MPI"]
-    D --> E["Validación perfiles NID / CL-Core"]
-    E --> F["Validación perfiles DAU"]
-    F --> G["Publicación FHIR y PDF"]
+    A["Recepción de Bundle FHIR R4<br/>tipo document"]
+    B["Validación de estructura<br/>del Bundle"]
+    C["Validación terminológica"]
+    D["Validación contra los<br/>perfiles DAU"]
+    E["Entrega al Portal Ciudadano<br/>FHIR + PDF asociado"]
+
+    A --> B
+    B --> C
+    C --> D
+    D --> E
 </div>
 
-## Validación del paciente mediante MPI/NID
+## Validación del paciente mediante MPI
 
 El Bus debe validar el recurso `Patient` antes de publicar cualquier información clínica.
 
@@ -106,7 +124,7 @@ El Bus debe validar el recurso `Patient` antes de publicar cualquier informació
 
 ## Servicio Terminológico
 
-La consulta terminológica se realiza después de la transformación a FHIR y antes de la validación MPI/NID.
+La consulta terminológica se realiza validación de identidad del paciente con la guía MPI.
 
 Se validan:
 
@@ -127,7 +145,7 @@ Se validan:
 - El establecimiento se identifica mediante código DEIS.
 - El Servicio de Salud se identifica mediante catálogo nacional.
 - Los profesionales se identifican mediante RUN, identificador profesional y rol.
-- Las organizaciones y profesionales se validan mediante NID/HPD.
+- Las organizaciones y profesionales se validan mediante CL-Core
 - El paciente se valida mediante MPI.
 - Los identificadores originales se conservan junto con los identificadores nacionales.
 
@@ -142,7 +160,7 @@ El Bus registra:
 - Identificador de atención.
 - Identificador del DAU.
 - Resultado terminológico.
-- Resultado MPI/NID.
+- Resultado MPI.
 - Resultado de validación.
 - Versión publicada.
 - Respuesta enviada al HIS/RCE.

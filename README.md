@@ -13,7 +13,7 @@ Las solicitudes de laboratorio e imagenología realizadas durante el episodio pu
 - FHIR: R4 (4.0.1)
 - Publicador: Unidad de Interoperabilidad, MINSAL
 - Canonical: `https://interoperabilidad.minsal.cl/fhir/ig/urgencia`
-- Dependencia implementada: CL-Core `1.8.5`
+- Dependencia implementada: CL-Core `1.9.3`
 
 ## Alcance
 
@@ -32,7 +32,7 @@ El alcance prioriza la información clínica necesaria para interoperar y permit
 
 ## Jerarquía normativa
 
-La guía utiliza FHIR R4 `4.0.1` y declara dependencia con CL-Core `1.8.5`. MPI, NID, terminologías nacionales, autenticación y autorización se consideran dependencias externas que deben formalizarse mediante sus guías y acuerdos institucionales correspondientes.
+La guía utiliza FHIR R4 `4.0.1` y declara dependencia con CL-Core `1.9.3`. MPI, terminologías nacionales, autenticación y autorización se consideran dependencias externas que deben formalizarse mediante sus guías y acuerdos institucionales correspondientes.
 
 El documento DAU se representa mediante un `Bundle.type = document` y una `Composition` como primera entrada. Los demás recursos se relacionan con la `Composition` y permiten representar el episodio completo de atención.
 
@@ -89,7 +89,7 @@ El documento puede contener recursos asociados como:
 | Página | Contenido |
 |---|---|
 | Inicio | Visión general, objetivo, alcance, estructura del DAU y recursos focales. |
-| Arquitectura | Sistemas participantes, flujo HIS/RCE–Bus, transformación, terminología, MPI/NID y publicación. |
+| Arquitectura | Sistemas participantes, flujo HIS/RCE–Bus, transformación, terminología, MPI, NID y publicación. |
 | Casos de uso | Actores, puntos de integración y flujo de intercambio del documento DAU. |
 | Estructura del DAU | `Bundle.type=document`, `Composition` y recursos asociados. |
 | Terminología | Categorización, diagnósticos, procedimientos, estados, destinos y códigos clínicos. |
@@ -149,7 +149,7 @@ Esta guía se construye a partir de:
 
 - Conjunto mínimo de datos del Documento de Atención de Urgencia (DAU), versión de trabajo 0.1.
 - Lineamientos de interoperabilidad HL7 FHIR R4 de MINSAL.
-- CL-Core `1.8.5`.
+- CL-Core `1.9.3`.
 - Guías de Implementación FHIR de referencia de Laboratorio Clínico e Imagenología, utilizadas como referencia para las solicitudes y la interoperabilidad entre dominios.
 - Terminologías clínicas aplicables a categorización, diagnósticos, procedimientos, medicamentos, destinos y estados de atención.
 
