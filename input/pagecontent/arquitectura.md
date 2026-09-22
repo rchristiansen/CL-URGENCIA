@@ -7,7 +7,7 @@ La arquitectura utiliza:
 1. HL7 FHIR R4 `4.0.1`.
 2. CL-Core Chile `1.8.5`.
 3. MPI/NID MINSAL como dependencias externas pendientes de formalización.
-5. Guía de dominio Datos de Atención de Urgencia (DAU).
+4. Guía de dominio Datos de Atención de Urgencia (DAU).
 
 La identidad del paciente deberá validarse mediante las transacciones y perfiles oficiales de MPI/NID que se acuerden para la versión normativa.
 
@@ -27,7 +27,7 @@ La identidad del paciente deberá validarse mediante las transacciones y perfile
 
 <div class="mermaid">
 flowchart LR
-    HIS["HIS / RCE"] -->|"HL7 v2 / FHIR R4"| TRANS["Transformación a FHIR R4"]
+    HIS["HIS / RCE"] -->|"FHIR R4"| TRANS["Transformación a FHIR R4"]
     TRANS --> TERM["Servicio Terminológico"]
     TERM --> MPI["Validación MPI / NID"]
     MPI --> VAL["Validación perfiles DAU"]
@@ -82,7 +82,7 @@ Un `Bundle.type = transaction` puede utilizarse para registrar múltiples recurs
 
 <div class="mermaid">
 flowchart TD
-    A["Entrada HL7 v2 / FHIR"] --> B["Bundle FHIR R4"]
+    A["Entrada FHIR R4"] --> B["Bundle FHIR R4"]
     B --> C["Validación terminológica"]
     C --> D["Validación Patient contra MPI"]
     D --> E["Validación perfiles NID / CL-Core"]
@@ -135,7 +135,6 @@ Se validan:
 
 El Bus registra:
 
-- `MSH-10`.
 - Sistema emisor.
 - Fecha y hora de recepción.
 - Identificador del paciente.

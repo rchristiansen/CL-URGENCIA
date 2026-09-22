@@ -18,10 +18,9 @@ Describir el flujo mediante el cual el HIS/RCE envía la información de una ate
 
 ## Puntos de integración
 
-1. **Punto FHIR directo:** el HIS/RCE envía un `Bundle` FHIR R4 de tipo `document`.
-2. **Punto HL7 v2 homologado:** el HIS/RCE envía mensajes HL7 v2 con la información de admisión, atención, solicitudes y egreso.
+1. **Intercambio mediante HL7 FHIR R4:** el sistema clínico de origen, como el HIS o RCE, genera y envía un `Bundle` FHIR R4 de tipo `document`.
 
-Ambos puntos convergen en el mismo modelo canónico FHIR R4.
+El modelo canónico de esta guía es FHIR R4.
 
 ## Flujo general
 
@@ -35,7 +34,7 @@ sequenceDiagram
     participant REP as Repositorio FHIR
     participant POR as Portal Ciudadano
 
-    HIS->>BUS: HL7 v2 o Bundle FHIR R4
+    HIS->>BUS: Bundle FHIR R4
     BUS->>FHIR: Transformar información de urgencia
     FHIR-->>BUS: Bundle document canónico
     BUS->>TERM: Validar códigos y unidades
@@ -73,17 +72,7 @@ sequenceDiagram
 6. El Bus valida la estructura, terminología e identidad del paciente.
 7. El Bus publica el documento y responde con el resultado de la operación.
 
-## Caso de uso 2: Envío HL7 v2
-
-1. El HIS/RCE genera los mensajes HL7 v2 acordados.
-2. El Bus recibe los segmentos definidos para admisión, atención, solicitudes, tratamientos y egreso.
-3. El Bus transforma la información a FHIR R4.
-4. El Servicio Terminológico valida los códigos.
-5. MPI/NID valida la identidad del paciente.
-6. El Bus construye el `Bundle.type = document`.
-7. El Bus publica el documento y responde con `ACK`, `NACK` u `OperationOutcome`, según corresponda.
-
-## Caso de uso 3: Publicación del documento DAU
+## Caso de uso 2: Publicación del documento DAU
 
 El repositorio conserva:
 
@@ -92,7 +81,6 @@ El repositorio conserva:
 - Recursos clínicos referenciados.
 - Solicitudes de laboratorio o imagenología realizadas durante la atención.
 - PDF mediante `DocumentReference`, si fue generado.
-- Identificador del mensaje de origen.
 - Resultado de las validaciones realizadas.
 
 El documento DAU no contiene informes ni resultados de laboratorio o imagenología. Esos resultados pertenecen a sus respectivos flujos y guías de implementación.

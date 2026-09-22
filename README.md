@@ -1,8 +1,8 @@
 # Guía de Implementación FHIR - Urgencia (DAU)
 
-Guía de Implementación (IG) FHIR R4 para el intercambio del Documento de Atención de Urgencia (DAU) en Chile. Define la representación de la atención de urgencia, desde la información clínica registrada en el HIS/RCE del establecimiento hasta su transformación, validación e interoperabilidad mediante el Bus de Interoperabilidad de MINSAL.
+Guía de Implementación (IG) FHIR R4 para el intercambio del Documento de Atención de Urgencia (DAU) en Chile. Define la representación de la atención de urgencia, desde la información clínica registrada en el HIS/RCE del establecimiento hasta su validación e interoperabilidad mediante el Bus de Interoperabilidad de MINSAL.
 
-La guía permite recibir información desde sistemas que generan HL7 v2 o FHIR R4 y establece un documento clínico común para la atención de urgencia, incluyendo la identificación del paciente, el episodio de atención, la categorización, las observaciones clínicas, los diagnósticos, las solicitudes, los procedimientos, los tratamientos y el egreso.
+La guía permite recibir información desde sistemas que generan recursos FHIR R4 y establece un modelo clínico interoperable común para la atención de urgencia. Este modelo incluye la identificación del paciente, el episodio de atención, la categorización, las observaciones clínicas, los diagnósticos, las solicitudes, los procedimientos, los tratamientos y el egreso.
 
 Las solicitudes de laboratorio e imagenología realizadas durante el episodio pueden representarse mediante `ServiceRequest` cuando existan.
 
@@ -19,10 +19,9 @@ Las solicitudes de laboratorio e imagenología realizadas durante el episodio pu
 
 La guía cubre el intercambio del documento clínico DAU generado al finalizar o cerrar una atención de urgencia. El establecimiento puede entregar la información mediante dos puntos de integración:
 
-1. **Punto FHIR directo:** los sistemas que generan FHIR R4 entregan un `Bundle` de tipo `document`, cuya primera entrada es una `Composition` que representa el DAU.
-2. **Punto HL7 v2 homologado:** los sistemas que generan HL7 v2 entregan sus mensajes al Bus o a un adaptador, que valida y transforma la información al modelo FHIR definido por esta guía.
+1. **Intercambio mediante HL7 FHIR R4:** los sistemas participantes generan y envían un `Bundle` de tipo `document`, cuya primera entrada corresponde a una `Composition` que representa el Documento de Atención de Urgencia (DAU).
 
-El modelo lógico del DAU es independiente del mecanismo de entrada. El documento puede generarse directamente desde FHIR o construirse a partir de mensajes HL7 v2.
+El modelo lógico del DAU es  FHIR R4.
 
 | Fase | Contenido | Estado |
 |---|---|---|
@@ -92,13 +91,12 @@ El documento puede contener recursos asociados como:
 | Inicio | Visión general, objetivo, alcance, estructura del DAU y recursos focales. |
 | Arquitectura | Sistemas participantes, flujo HIS/RCE–Bus, transformación, terminología, MPI/NID y publicación. |
 | Casos de uso | Actores, puntos de integración y flujo de intercambio del documento DAU. |
-| Mapeo HL7 v2 a FHIR | Mapeo preliminar de segmentos y campos HL7 v2 hacia recursos FHIR R4. |
 | Estructura del DAU | `Bundle.type=document`, `Composition` y recursos asociados. |
 | Terminología | Categorización, diagnósticos, procedimientos, estados, destinos y códigos clínicos. |
 | Validaciones | Reglas de identidad, obligatoriedad, consistencia y validación terminológica. |
 | Historial de cambios | Cambios técnicos y funcionales por versión. |
 
-La guía contempla tres casos de uso: envío FHIR directo, envío HL7 v2 y publicación del documento DAU.
+La guía contempla dos casos de uso: envío FHIR directo y publicación del documento DAU.
 
 ## Estructura del repositorio
 
@@ -153,7 +151,6 @@ Esta guía se construye a partir de:
 - Lineamientos de interoperabilidad HL7 FHIR R4 de MINSAL.
 - CL-Core `1.8.5`.
 - Guías de Implementación FHIR de referencia de Laboratorio Clínico e Imagenología, utilizadas como referencia para las solicitudes y la interoperabilidad entre dominios.
-- Especificaciones de los sistemas HIS/RCE y de los mensajes HL7 v2 disponibles para el proceso de urgencia.
 - Terminologías clínicas aplicables a categorización, diagnósticos, procedimientos, medicamentos, destinos y estados de atención.
 
 ## Contacto

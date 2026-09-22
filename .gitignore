@@ -7,6 +7,8 @@ package-lock.json
 /temp
 /template
 /node_modules
+/gobernanza
+/.github
 
 # Archivos pesados y ejecutables de FHIR
 *.jar

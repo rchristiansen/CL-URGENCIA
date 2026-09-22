@@ -42,7 +42,7 @@ La información enviada por el HIS/RCE se transforma primero al modelo canónico
 
 <div class="mermaid">
 flowchart TD
-    A["HIS / RCE"] -->|"HL7 v2 o FHIR R4"| B["Transformación FHIR R4"]
+    A["HIS / RCE"] -->|"FHIR R4"| B["Transformación FHIR R4"]
     B --> C["Servicio Terminológico"]
     C --> D["Validación MPI / NID"]
     D --> E["Validación DAU"]
@@ -74,21 +74,21 @@ La `Composition` organiza el documento y referencia:
 
 ## Recursos focales
 
-| Contenido | Recurso FHIR | Perfil propuesto | Origen HL7 v2 |
-|---|---|---|---|
-| Documento DAU | `Composition` | `ComposicionDocumentoDAU` | `TXA`, `MSH` |
-| Contenedor documental | `Bundle` | `BundleDocumentoDAU` | `MSH` |
-| Paciente | `Patient` | `DauPatient` sobre CL-Core | `PID` |
-| Atención | `Encounter` | `DauEncounter` | `PV1`, `PV2`, `EVN` |
-| Diagnóstico | `Condition` | `DiagnosticoUrgenciaDAU` | `DG1` |
-| Triage y signos vitales | `Observation` | `ObservacionUrgenciaDAU` | `OBX` |
-| Solicitudes | `ServiceRequest` | `SolicitudUrgenciaDAU` | `ORC`, `OBR` |
-| Procedimientos | `Procedure` | `ProcedimientoUrgenciaDAU` | `PR1` |
-| Medicamentos administrados | `MedicationAdministration` | `MedicamentoAdministradoUrgenciaDAU` | `RXA` |
-| Medicamentos indicados | `MedicationRequest` | `MedicamentoIndicadoUrgenciaDAU` | `RXE`, `RXO` |
-| Profesionales | `PractitionerRole` | `RolProfesionalUrgenciaDAU` | `PV1`, `DG1`, `OBX` |
-| Establecimiento | `Organization` | `OrganizacionUrgenciaDAU` | `MSH`, `PV1` |
-| PDF | `DocumentReference` | `DocumentoPDFUrgenciaDAU` | `OBX` tipo `ED` |
+| Contenido | Recurso FHIR | Perfil propuesto |
+|---|---|---|
+| Documento DAU | `Composition` | `ComposicionDocumentoDAU` |
+| Contenedor documental | `Bundle` | `BundleDocumentoDAU` |
+| Paciente | `Patient` | `DauPatient` sobre CL-Core |
+| Atención | `Encounter` | `DauEncounter` |
+| Diagnóstico | `Condition` | `DiagnosticoUrgenciaDAU` |
+| Triage y signos vitales | `Observation` | `ObservacionUrgenciaDAU` |
+| Solicitudes | `ServiceRequest` | `SolicitudUrgenciaDAU` |
+| Procedimientos | `Procedure` | `ProcedimientoUrgenciaDAU` |
+| Medicamentos administrados | `MedicationAdministration` | `MedicamentoAdministradoUrgenciaDAU` |
+| Medicamentos indicados | `MedicationRequest` | `MedicamentoIndicadoUrgenciaDAU` |
+| Profesionales | `PractitionerRole` | `RolProfesionalUrgenciaDAU` |
+| Establecimiento | `Organization` | `OrganizacionUrgenciaDAU` |
+| PDF | `DocumentReference` | `DocumentoPDFUrgenciaDAU` |
 
 ## Alineación nacional
 
