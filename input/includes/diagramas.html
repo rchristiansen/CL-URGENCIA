@@ -1,0 +1,17 @@
+<!--
+  Renderiza los diagramas de esta guía como SVG dentro de la página.
+  La plantilla usa mermaid con securityLevel "sandbox" (iframe), que no ajusta
+  el alto al diagrama y lo corta o deja espacio vacío. "strict" es igual de
+  seguro para contenido propio (sin scripts ni clics) y el alto es automático.
+-->
+<style>
+  .diagrama-urgencia { margin: 1em 0; overflow-x: auto; }
+  .diagrama-urgencia svg { max-width: 100%; height: auto; }
+</style>
+<script>
+  window.addEventListener('load', function () {
+    if (!window.mermaid) return;
+    mermaid.initialize({ startOnLoad: false, securityLevel: 'strict' });
+    mermaid.run({ querySelector: '.diagrama-urgencia' });
+  });
+</script>

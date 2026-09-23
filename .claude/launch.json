@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "ig-serve",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["scripts/ig.mjs", "serve"],
+      "env": { "IG_PORT": "8093" },
+      "port": 8093
+    }
+  ]
+}

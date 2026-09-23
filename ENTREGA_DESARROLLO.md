@@ -1,121 +1,62 @@
-| HIS/RCE del establecimiento | El flujo comienza con la información de admisión, identificación, evaluación clínica, observaciones, diagnósticos, solicitudes, tratamientos, procedimientos y egreso. |
 # Notas de continuidad de desarrollo
 
-Documento de traspaso: qué está resuelto, qué está decidido pero no implementado y qué sigue abierto en la Guía de Implementación FHIR de Urgencia — Datos de Atención de Urgencia (DAU). Complementa el `README.md` —qué es la guía— y la página *Historial de cambios* del sitio publicado —qué cambió en cada versión—.
+Documento de traspaso: qué está resuelto, qué está decidido y qué sigue abierto. Complementa el `README.md` y la página *Historial de cambios*.
 
-## Estado de la versión 0.1.0
+## Estado de la versión 0.2.0
 
-La guía se encuentra en estado **draft** y en desarrollo inicial. SUSHI compila la estructura actual con **0 errores y 0 advertencias**. La versión incluye los perfiles documentales y clínicos definidos para el DAU, junto con ejemplos FHIR de referencia.
+La guía se rediseñó desde un documento único al cierre (`Bundle document` + `Composition`) hacia **tres eventos** (`Bundle transaction`): admisión, alta y abandono. SUSHI compila con 0 errores y 0 advertencias; el IG Publisher reporta 0 errores (ejemplos validados contra CL-Core 1.9.2 y NID 0.4.6).
 
-| Elemento | Estado |
-|---|---|
-| Estructura del proyecto IG | Disponible |
-| Configuración de SUSHI e IG Publisher | Disponible |
-| Perfil de paciente | Implementado mediante `DauPatient` basado en CL-Core 1.9.3 |
-| Modelo documental DAU | Implementado mediante `BundleDocumentoDAU` y `ComposicionDocumentoDAU` |
-| Perfiles clínicos | Implementados como base técnica; pendientes de validación clínica |
-| Solicitudes de laboratorio e imagenología | Representadas mediante `SolicitudUrgenciaDAU` (`ServiceRequest`) cuando existan |
-| Resultados de laboratorio e imagenología | Fuera del alcance del documento DAU |
-| Mapeo HL7 v2 a FHIR | Propuesto; pendiente de validación con mensajes reales |
-| Terminologías y valores permitidos | CodeSystems y ValueSets iniciales; bindings nacionales pendientes |
-| Publicación oficial del canonical | Pendiente |
+Fuentes usadas para el rediseño:
 
-## Decisiones de diseño tomadas
+- *Modelo FHIR Mínimo — Admisión y Alta de Urgencia* (Encounter central, DocumentReference al PDF).
+- CMBD de Urgencia DEIS (`CMBD_URGENCIAS3.xlsx`): campos, formatos y dominios.
+- Guía publicada 0.1.2-ballot: códigos de tipo de abandono y patrón por eventos.
 
-Estas decisiones deben conservarse mientras no exista un acuerdo técnico o clínico que las modifique:
+## Decisiones de diseño
 
-1. **El alcance inicial se centra en el documento clínico DAU.** La guía representa la información clínica de una atención de urgencia al finalizar o cerrar el episodio.
-2. **El DAU se representa como un documento FHIR R4.** La estructura principal es un `Bundle` con `type = document` y una `Composition` como primera entrada.
-3. **El modelo lógico es independiente del formato de entrada.** El establecimiento puede enviar FHIR R4 directamente o HL7 v2 para que el Bus o un adaptador lo transforme al modelo FHIR.
-4. **El HIS/RCE del establecimiento es el origen de la información clínica.** El flujo comienza con la información de admisión, identificación, observaciones, diagnósticos, solicitudes, tratamientos, procedimientos y egreso.
-5. **El Bus consulta terminología y valida identidad.** El flujo contempla la transformación a FHIR, la consulta terminológica y la validación del paciente mediante MPI antes de publicar.
-6. **El Portal Ciudadano es un consumidor posterior.** No participa en la generación ni transformación del documento DAU.
-7. **Las solicitudes se representan con `ServiceRequest`.** Las solicitudes de laboratorio e imagenología se incorporan únicamente cuando fueron realizadas durante el episodio.
-8. **Las guías de laboratorio e imagenología mantienen sus propios flujos.** El documento DAU no incorpora sus recursos de resultados ni informes.
-9. **Las fechas utilizan el formato FHIR/ISO 8601.** Cuando corresponda, deben conservar la zona horaria y distinguir la fecha de atención, emisión y recepción.
+1. **Eventos, no documento.** La red necesita saber en el momento que un paciente ingresó o se fue, no solo al cierre.
+2. **`Bundle.type = transaction` con `PUT` condicional por identificador.** Estándar en cualquier servidor FHIR, atómico y alineado con 0.1.2-ballot. El evento no se declara: se deduce del estado del `Encounter`, que cada perfil de transacción obliga. Se descartó `message` porque `$process-message` exige programar la lógica en el Bus.
+3. **Encounter central, correlación por ID DAU.** `PUT Encounter?identifier=[sistema]|[ID DAU]` crea el episodio en la admisión y lo actualiza en el alta o abandono. Nunca se correlaciona por `Encounter.id`.
+4. **Transacciones autocontenidas e idempotentes.** Cada una trae paciente, establecimiento y encuentro; un alta sin admisión previa crea el episodio, y un reenvío no duplica recursos.
+5. **Perfil de Encounter por evento.** Las reglas de cada momento (estado, `period.end`, destino) se validan con perfiles derivados, no con lógica en el Bus.
+6. **Fuga y NEA = evento `abandono`.** Se distinguen por `CSTipoAbandono` (1 NEA, 2 fuga), mismos códigos que 0.1.2-ballot.
+7. **Sin `Composition`.** El `DocumentReference` basta para descubrir y acceder al PDF. Diferencia deliberada con el documento *Modelo FHIR Mínimo*, que la listaba como obligatoria.
+8. **Lo clínico detallado queda en el PDF.** Solo se estructura diagnóstico y medicamentos al alta. Categorización, signos vitales, exámenes y procedimientos quedan fuera.
+9. **Datos CMBD no clínicos como extensiones opcionales.** Permiten alimentar la estadística sin obligar a los establecimientos.
+10. **Paciente, profesional y establecimiento son los perfiles del NID** (`MINSALPaciente`, `MINSALPrestadorProfesional`, `MINSALPrestadorOrganizacional`), sin perfilamiento propio. La terminología administrativa (previsión, tramo, leyes, título) también es la del NID.
+11. **Tipo de diagnóstico CMBD → `Condition.verificationStatus`.** Hipótesis/confirmado/descartado = `provisional`/`confirmed`/`refuted`. Hipótesis vs egreso → `Encounter.diagnosis.use` (`AD`/`DD`).
 
-## Pendientes técnicos
+## Pendientes
 
-### Perfilamiento FHIR
+### Terminología e identificadores
 
-- Validar clínicamente las cardinalidades de `Composition`, `Bundle`, `Encounter`, `Observation`, `Condition`, `ServiceRequest`, `Procedure`, medicamentos, profesionales, organización y documentos.
-- Definir las secciones clínicas definitivas de `ComposicionDocumentoDAU`.
-- Confirmar el conjunto mínimo de datos obligatorio para el documento DAU.
-- Validar la representación del destino del paciente: alta, hospitalización, traslado, abandono, NEA o fallecimiento.
-- Confirmar si el PDF se entrega mediante `Attachment.data`, `Attachment.url` o ambos mecanismos según el acuerdo institucional.
-- Validar los ejemplos completos contra un validador FHIR R4 y contra los sistemas participantes.
+- Identificadores: RUN usa el OID de los ejemplos NID (`urn:oid:2.16.840.1.113883.2.22.1.152.787300`) y el establecimiento el sistema DEIS de TEI (`https://interoperabilidad.minsal.cl/fhir/ig/tei/CodeSystem/CSEstablecimientoDestino`). Confirmar que son los oficiales.
+- CL-Core se fijó en **1.9.2** porque NID 0.4.6 depende de esa versión y fija bindings versionados (países en `CodPais`). Con 1.9.3 cargada en paralelo, los países cambian a `urn:iso:std:iso:3166` y ningún código satisface ambos. `EncounterCL` y `CoreDiagnosticoCl` son idénticos en 1.9.2 y 1.9.3. Para volver a 1.9.3+ hay que migrar a una versión del NID construida sobre ella (0.4.9 es la última).
+- `MINSALPaciente` exige identidad de género, nacionalidad, país de origen, teléfono, fecha de nacimiento y `deceased[x]`. Pacientes NN o sin teléfono no validan: definir con NID cómo se informan en urgencia.
+- `CSLeyPrevisionales` del NID no incluye PRAIS (código 05 del CMBD). La extensión quedó con binding `extensible` mientras se resuelve.
+- Armonizar procedencia y medio de llegada: el CMBD (7 y 17 códigos) difiere de la guía 0.1.2-ballot (14 y 14 códigos). La guía usa el CMBD.
+- Definir URI de TAPSA para diagnósticos.
+- Publicar los CodeSystems en el Servidor Terminológico Nacional y quitar `experimental`.
 
-### Terminología e identidad
+### Bus y operación
 
-- Confirmar los ValueSets nacionales para diagnósticos CIE-10, procedimientos, medicamentos, destinos y estados.
-- Definir los sistemas de códigos nacionales y locales que deben conservarse junto con los textos originales.
-- Formalizar la dependencia técnica con los paquetes y transacciones oficiales de MPI cuando estén disponibles.
-- Definir la respuesta del Bus cuando la identidad del paciente o un código no pueda validarse.
-- Mantener los códigos originales cuando la homologación no sea posible.
+- Confirmar endpoint y autenticación del Bus para las transacciones.
+- Confirmar que el repositorio soporta `PUT` condicional y `Subscription` (para avisar eventos a la red).
+- Definir cómo evitar que una admisión reenviada tarde reabra un episodio cerrado (validación en el Bus o `If-Match`).
+- Confirmar con HCC qué información muestra al paciente (episodios, diagnóstico, PDF).
+- Confirmar si el PDF lo hospeda el establecimiento (URL) o se replica en el repositorio central.
+- Definir plazo máximo de envío por evento (ej.: admisión < 15 min).
+- Definir tratamiento de correcciones (`entered-in-error`) y de reapertura de episodios.
 
-### Mapeo HL7 v2 a FHIR
+### Validación clínica
 
-El mapeo inicial propuesto es:
+- Validar con DIGERA/DEIS el conjunto obligatorio por evento (tabla en *Modelo de eventos*).
+- Confirmar si el alta debe exigir profesional responsable (hoy opcional).
+- Confirmar si el alta debe exigir PDF siempre (hoy obligatorio).
 
-| HL7 v2 | FHIR | Uso |
-|---|---|---|
-| `PID` | `Patient` | Identificación y datos demográficos. |
-| `PV1` / `EVN` | `Encounter` | Episodio, tipo, fechas, ubicación y estado. |
-| `OBX` | `Observation` | Signos vitales y observaciones clínicas. |
-| `DG1` | `Condition` | Diagnósticos e hipótesis diagnósticas. |
-| `ORC` / `OBR` | `ServiceRequest` | Solicitudes de laboratorio, imagenología, procedimientos o derivaciones. |
-| `PR1` | `Procedure` | Procedimientos realizados. |
-| `RXA` | `MedicationAdministration` | Medicamentos administrados. |
-| `RXO` / `RXE` | `MedicationRequest` | Tratamientos o indicaciones prescritas. |
-| `TXA` | `Composition` | Metadatos del documento clínico, cuando el mensaje de origen lo utilice. |
-| `ED` en `OBX` | `DocumentReference` | PDF u otro documento clínico asociado, cuando corresponda. |
-
-Pendientes del mapeo:
-
-- Confirmar la versión HL7 v2 y los tipos de mensaje utilizados por los sistemas de urgencia.
-- Definir los eventos disparadores para admisión, atención, solicitudes y egreso.
-- Validar los campos con mensajes reales del HIS/RCE.
-- Definir cómo se preservan los textos libres, códigos originales y datos ausentes.
-- Definir la correlación entre el identificador del mensaje, el identificador de la atención y el identificador del documento DAU.
-- Confirmar que las solicitudes sin información disponible no se generen como recursos incompletos.
-
-### Reglas que debe implementar el Bus
-
-Estas reglas corresponden al procesamiento y no se expresan completamente mediante invariantes FHIR:
-
-- Validar el dígito verificador del RUN y la consistencia de los identificadores del paciente.
-- Resolver o confirmar la identidad mediante MPI antes de publicar el DAU.
-- Consultar y validar los códigos mediante el Servicio Terminológico.
-- Verificar que la primera entrada del Bundle documental sea la `Composition`.
-- Validar la consistencia entre paciente, episodio, establecimiento, profesionales y fechas.
-- Persistir el documento antes de enviar el acuse de recibo correspondiente.
-- Implementar control de duplicados, trazabilidad técnica y auditoría de recepción.
-- Registrar los errores de validación con información suficiente para que el establecimiento pueda corregir y reenviar.
-- Mantener separados los flujos de solicitudes DAU y los flujos de resultados de laboratorio o imagenología.
-
-## Puntos abiertos de alcance
-
-1. Confirmar si el documento se genera exclusivamente al cierre de la atención o si también deben intercambiarse estados intermedios.
-2. Definir el conjunto mínimo de datos clínicos y separar los campos obligatorios de los opcionales.
-3. Confirmar la representación de las solicitudes de laboratorio e imagenología dentro del DAU cuando existan.
-4. Definir el repositorio FHIR o mecanismo de publicación que recibirá el documento.
-5. Confirmar el perfil de identidad definitivo y la responsabilidad de cada componente entre HIS/RCE, Bus, MPI y Servicio Terminológico.
-6. Validar con los equipos clínicos las reglas de negocio para alta, hospitalización, traslado, abandono y NEA.
-
-## Cómo retomar el desarrollo
+## Cómo retomar
 
 ```bash
-npm install          # instala SUSHI en la versión fijada
-npm run doctor       # verifica Node, Java, Jekyll y publisher.jar
-npm run publisher    # descarga el IG Publisher si aún no existe
-npm run build        # SUSHI + IG Publisher
-npm run serve        # sirve la guía en http://localhost:8081
+npm run sushi      # solo perfiles
+npm run build      # SUSHI + IG Publisher; revisar output/qa.html
 ```
-
-Para iterar solo los perfiles FSH:
-
-```bash
-npm run sushi
-```
-
-Después de cada cambio se debe revisar el resultado de SUSHI, el `output/qa.html`, los enlaces del sitio y los ejemplos generados. Antes de publicar la versión 0.1.0 se deben cerrar las cardinalidades, dependencias, terminologías y reglas de validación definidas como pendientes.

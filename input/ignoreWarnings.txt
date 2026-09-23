@@ -3,3 +3,12 @@
 # Add warning and/or information messages here after you've confirmed that they aren't really a problem
 # (And include comments like this justifying why)
 # See https://github.com/FHIR/sample-ig/blob/master/input/ignoreWarnings.txt for examples
+# La terminología local se mantiene experimental hasta su publicación en el Servidor
+# Terminológico Nacional; los perfiles en draft la usan deliberadamente.
+%which is experimental, but this structure is not labeled as experimental
+
+# Aún no hay raíz OID asignada para la terminología de la guía.
+%should have an OID assigned to cater for possible use with OID based terminology systems%
+
+# Los sistemas de identificadores de los ejemplos son ficticios.
+%El valor URL 'https://hospital-ejemplo.cl/%

@@ -1,4 +1,51 @@
-# Historial de cambios
+## Versión 0.2.0
+
+Rediseño de la guía hacia un **modelo de eventos mínimo** orientado a la continuidad de la atención en la red. Reemplaza el modelo documental de las versiones 0.1.x.
+
+### Alcance funcional
+
+- **Tres eventos:** la atención se informa mediante tres transacciones: **admisión**, **alta** y **abandono** (fuga o NEA). Reemplaza el envío único de un documento al cierre.
+- **Encounter como recurso central:** un único episodio que se abre en la admisión (`in-progress`) y se cierra con el alta o el abandono (`finished`). Los eventos se correlacionan por el ID DAU (`Encounter.identifier`).
+- **Contenido clínico mínimo:** diagnóstico de egreso, medicamentos indicados al alta y referencia al PDF del DAU. El detalle clínico queda en el PDF.
+- **Abandono:** fuga y NEA se unifican en el evento `abandono` y se distinguen por el tipo de abandono (códigos alineados con la versión 0.1.2-ballot).
+- **CMBD de Urgencia:** se incorpora el mapeo campo a campo del CMBD (DEIS) a FHIR, con sus dominios como CodeSystems locales.
+
+### Estructura
+
+- **`Bundle.type = transaction`** en lugar de `Bundle.type = document` con `Composition`, alineado con la versión 0.1.2-ballot.
+- **`PUT` condicional por identificador** en todas las entradas: el ID DAU correlaciona los eventos y un reenvío no duplica recursos. Diagnóstico, indicación de medicamento y documento exigen identificador.
+- **HCC (Portal Ciudadano)** se incorpora como consumidor en los diagramas de arquitectura y casos de uso.
+- **Se elimina `Composition`:** el `DocumentReference` basta para descubrir y acceder al PDF.
+
+### Dependencias
+
+- Se agrega `hl7.fhir.cl.minsal.nid` `0.4.6`.
+- `hl7.fhir.cl.clcore` pasa de `1.9.3` a `1.9.2`, la versión sobre la que está construido NID 0.4.6.
+
+### Perfiles
+
+Nuevos:
+
+- `BundleAdmisionUrgencia`, `BundleAltaUrgencia`, `BundleAbandonoUrgencia` (y su base `BundleUrgencia`).
+- `EncuentroUrgencia` y sus variantes por evento: `EncuentroUrgenciaAdmision`, `EncuentroUrgenciaAlta`, `EncuentroUrgenciaAbandono`.
+- `IndicacionMedicamentoUrgencia` (`MedicationRequest`) con nombre y posología en texto libre.
+
+Paciente, profesional y establecimiento usan **directamente** los perfiles del NID 0.4.6: `MINSALPaciente`, `MINSALPrestadorProfesional` y `MINSALPrestadorOrganizacional`. Se eliminan `DauPatient`, `ProfesionalUrgenciaDAU` y `OrganizacionUrgenciaDAU`.
+
+Renombrados y simplificados:
+
+- `DiagnosticoUrgenciaDAU` → `DiagnosticoUrgencia` (tipo de diagnóstico en `verificationStatus`).
+- `DocumentoPDFUrgenciaDAU` → `DocumentoUrgencia` (PDF por URL).
+
+Eliminados: `BundleDocumentoDAU`, `ComposicionDocumentoDAU`, `ObservacionUrgenciaDAU`, `SolicitudUrgenciaDAU`, `ProcedimientoUrgenciaDAU`, `MedicamentoAdministradoUrgenciaDAU`, `RolProfesionalUrgenciaDAU`, `UbicacionUrgenciaDAU`.
+
+### Terminología y extensiones
+
+- CodeSystems del CMBD: procedencia, medio de llegada, unidad de atención, clasificación de la consulta, destino de alta y pronóstico médico-legal.
+- Previsión, tramo FONASA, leyes previsionales y título profesional usan la terminología del NID.
+- CodeSystems propios: evento de urgencia y tipo de abandono.
+- Extensiones opcionales para datos del CMBD sin elemento FHIR equivalente: medio de llegada, previsión, ley previsional, clasificación de la consulta, pronóstico médico-legal, pertinencia y diagnóstico GES.
+- Se eliminan `TipoDocumentoDAU`, `SeccionesDAU`, `CondicionEgresoDAU` y `TipoDiagnosticoDAU`.
 
 ## Versión 0.1.2
 
