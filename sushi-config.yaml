@@ -3,11 +3,11 @@
 # ╰──────────────────────────────────────────────────────────────────────────────────────────╯
 id: hl7.fhir.cl.minsal.urgencia
 canonical: https://interoperabilidad.minsal.cl/fhir/ig/urgencia
-name: UrgenciaDAU
-title: Guía de Implementación FHIR - Urgencia DAU (Datos de atención de urgencia)
-description: Guía de Implementación FHIR para el intercambio de Datos de Atención de Urgencia (DAU)
+name: UrgenciaAdmisionAlta
+title: Guía de Implementación FHIR - Urgencia (Admisión, Alta y Abandono)
+description: Guía de Implementación FHIR R4 que define los eventos mínimos de admisión, alta y abandono de una atención de urgencia para la continuidad de la atención en la red asistencial.
 status: draft # draft | active | retired | unknown
-version: 0.1.0
+version: 0.2.0
 fhirVersion: 4.0.1 # https://www.hl7.org/fhir/valueset-FHIR-version.html
 copyrightYear: 2026+
 releaseLabel: ci-build
@@ -23,7 +23,8 @@ publisher:
 # use cases, the value can be an object with keys for id, uri, and version.
 #
 dependencies:
-  hl7.fhir.cl.clcore: 1.9.3
+  hl7.fhir.cl.clcore: 1.9.2
+  hl7.fhir.cl.minsal.nid: 0.4.6
 #   hl7.fhir.us.mcode:
 #     id: mcode
 #     uri: http://hl7.org/fhir/us/mcode/ImplementationGuide/hl7.fhir.us.mcode
@@ -44,10 +45,14 @@ dependencies:
 pages:
   index.md:
     title: Inicio
+  modelo.md:
+    title: Modelo de eventos
   arquitectura.md:
     title: Arquitectura
   casos-de-uso.md:
     title: Casos de uso
+  mapeo-cmbd.md:
+    title: Mapeo CMBD
   historial-de-cambios.md:
     title: Historial de cambios
 #
@@ -75,9 +80,11 @@ pages:
 # ╰────────────────────────────────────────────────────────────────────────────────────────────────╯
 menu:
   Inicio: index.html
+  Modelo de eventos: modelo.html
   Arquitectura: arquitectura.html
   Casos de uso: casos-de-uso.html
-  Perfiles: artifacts.html
+  Mapeo CMBD: mapeo-cmbd.html
+  Artefactos: artifacts.html
   Historial de cambios: historial-de-cambios.html
 # ╭───────────────────────────Less Common Implementation Guide Properties──────────────────────────╮
 # │  Uncomment the properties below to configure additional properties on the ImplementationGuide  │

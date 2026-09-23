@@ -1,102 +1,94 @@
-# Guía de Implementación FHIR R4 - Urgencia
+## Objetivo
 
-## Datos de Atención de Urgencia (DAU)
+Esta guía define **lo mínimo** que un establecimiento debe informar a la red cuando atiende a una persona en su unidad de urgencia, para que cualquier otro punto de la red (APS, especialidad, otro hospital, SAMU) sepa:
 
-## Introducción
+1. **Quién** fue atendido.
+2. **Dónde** y **cuándo** ocurrió la atención.
+3. **Cómo terminó**: alta (con destino), o abandono voluntario (fuga o NEA).
+4. **Qué tenía** el paciente: hipótesis y diagnóstico de egreso.
+5. **Qué se le indicó**: medicamentos al alta.
+6. **Dónde está el detalle clínico completo**: el documento DAU en PDF.
 
-Esta Guía de Implementación define el modelo de interoperabilidad para el intercambio de los **Datos de Atención de Urgencia (DAU)** entre el **HIS/RCE**, el Bus de Interoperabilidad y el Portal Ciudadano.
+El foco es la **continuidad de la atención**, no el registro clínico exhaustivo. El detalle clínico (anamnesis, examen físico, signos vitales, exámenes, procedimientos) sigue en el PDF generado por el HIS/RCE.
 
-El objetivo es transformar la información clínica y administrativa registrada durante una atención de urgencia en recursos **HL7 FHIR R4**, validarlos mediante los servicios nacionales de terminología e identidad y publicarlos para su consulta en el Portal Ciudadano.
+## Tres eventos
 
-La guía utiliza FHIR R4 `4.0.1` y CL-Core `1.9.3`. MPI, y los catálogos nacionales se consideran dependencias externas pendientes de confirmación y no se declaran todavía como paquetes implementados por esta guía.
+La atención de urgencia se informa mediante **tres transacciones FHIR** (`Bundle` de tipo `transaction`), una por cada hito:
 
-Para el detalle de los actores y mensajes, consultar [Casos de uso](casos-de-uso.html).
+| Evento | Cuándo se envía | Estado del episodio | Contenido clave |
+|---|---|---|---|
+| **Admisión** | Al admitir al paciente en urgencia | Abierto (`in-progress`) | Paciente, establecimiento, fecha/hora de admisión, motivo de consulta, procedencia, medio de llegada |
+| **Alta** | Al dar el alta médica | Cerrado (`finished`) | Fecha/hora de alta, destino, diagnóstico de egreso, medicamentos indicados, PDF |
+| **Abandono** | Al constatar que el paciente se retiró sin alta (fuga o NEA) | Cerrado (`finished`) | Fecha/hora de abandono, tipo de abandono, hipótesis diagnóstica y PDF si existen |
 
-## Alcance inicial
-
-Esta primera versión contempla:
-
-- Información de admisión del paciente.
-- Identificación mediante RUN, pasaporte, MPI o identificador local.
-- Código DEIS del establecimiento y Servicio de Salud.
-- Fecha y hora de admisión.
-- Procedencia y medio de llegada.
-- Motivo de consulta.
-- Evaluación clínica disponible.
-- Signos vitales y observaciones clínicas.
-- Condición y destino de egreso, incluido NEA.
-- Anamnesis, antecedentes y alergias.
-- Diagnósticos e hipótesis diagnósticas.
-- Solicitudes de exámenes y procedimientos.
-- Solicitudes de laboratorio e imagenología realizadas durante el episodio, cuando existan.
-- Tratamientos y medicamentos administrados.
-- Medicamentos e indicaciones de alta.
-- Procedimientos realizados.
-- Condición y destino de egreso.
-- Identificación de profesionales participantes.
-- Documento DAU en formato estructurado y PDF.
-- Identificación del documento y trazabilidad técnica de la recepción.
-
-## Principio de diseño
-
-La información enviada por el HIS/RCE se transforma primero al modelo canónico FHIR R4. Posteriormente, el Bus consulta el Servicio Terminológico, valida la identidad del paciente contra MPI y publica el resultado.
+Todo episodio abre con una **admisión** y cierra con un **alta** o un **abandono**.
 
 <div class="mermaid">
-flowchart TD
-    A["RCE/HIS "] -->|"Bundle FHIR R4 tipo document"| B["Bus de Interoperabilidad"]
-    B --> C["Resolución de identidad<br/>MPI"]
-    C --> D["Validación terminológica"]
-    D --> E["Validación contra la<br/>Guía de Implementación DAU"]
-    E --> F["Portal Ciudadano"]
+stateDiagram-v2
+    direction LR
+    [*] --> EnAtencion: Admisión
+    EnAtencion --> Cerrado: Alta
+    EnAtencion --> Cerrado: Abandono (fuga / NEA)
+    Cerrado --> [*]
+    state "En atención (in-progress)" as EnAtencion
+    state "Cerrado (finished)" as Cerrado
 </div>
 
-## Modelo documental
+## Flujo general
 
-El DAU se representa mediante un `Bundle` FHIR R4 de tipo `document`.
+<div class="mermaid">
+flowchart LR
+    HIS["HIS / RCE<br/>urgencia"] -->|"transacción FHIR<br/>admisión · alta · abandono"| BUS["Bus de Interoperabilidad<br/>MINSAL"]
+    BUS --> REP["Repositorio FHIR"]
+    REP --> RED["Red asistencial<br/>APS · especialidad · hospitales"]
+    REP --> HCC["HCC<br/>Portal Ciudadano"]
+</div>
+
+La información queda disponible para los equipos de la red que continúan la atención y para el propio paciente en **HCC (Portal Ciudadano)**.
+
+## Principio del modelo
+
+El recurso central es el **`Encounter`**: representa un único episodio de urgencia, desde la admisión hasta su cierre. No se crea un recurso distinto para cada evento: cada transacción **actualiza el mismo `Encounter`** mediante `PUT` condicional por su **ID DAU**, con el estado del momento.
 
 ```text
-Bundle.type = document
-Bundle.entry[0].resource = Composition
+Patient ............ ¿Quién?
+Organization ....... ¿Dónde?
+Encounter .......... ¿Qué atención ocurrió, cuándo y cómo terminó?
+Condition .......... ¿Qué diagnóstico se registró?
+MedicationRequest .. ¿Qué medicamentos se indicaron al alta?
+DocumentReference .. ¿Dónde está el documento clínico completo? → PDF
 ```
 
-La `Composition` organiza el documento y referencia:
+## Perfiles
 
-- `Patient`.
-- `Encounter`.
-- `Organization`.
-- `PractitionerRole`.
-- `Condition`.
-- `Observation`.
-- `Procedure`.
-- `ServiceRequest`.
-- `MedicationRequest`.
-- `DocumentReference`.
-
-## Recursos focales
-
-| Contenido | Recurso FHIR | Perfil propuesto |
+| Perfil | Recurso | Uso |
 |---|---|---|
-| Documento DAU | `Composition` | `ComposicionDocumentoDAU` |
-| Contenedor documental | `Bundle` | `BundleDocumentoDAU` |
-| Paciente | `Patient` | `DauPatient` sobre CL-Core |
-| Atención | `Encounter` | `DauEncounter` |
-| Diagnóstico | `Condition` | `DiagnosticoUrgenciaDAU` |
-| Triage y signos vitales | `Observation` | `ObservacionUrgenciaDAU` |
-| Solicitudes | `ServiceRequest` | `SolicitudUrgenciaDAU` |
-| Procedimientos | `Procedure` | `ProcedimientoUrgenciaDAU` |
-| Medicamentos administrados | `MedicationAdministration` | `MedicamentoAdministradoUrgenciaDAU` |
-| Medicamentos indicados | `MedicationRequest` | `MedicamentoIndicadoUrgenciaDAU` |
-| Profesionales | `PractitionerRole` | `RolProfesionalUrgenciaDAU` |
-| Establecimiento | `Organization` | `OrganizacionUrgenciaDAU` |
-| PDF | `DocumentReference` | `DocumentoPDFUrgenciaDAU` |
+| [Transacción de admisión](StructureDefinition-transaccion-admision-urgencia.html) | `Bundle` (transaction) | Evento admisión. |
+| [Transacción de alta](StructureDefinition-transaccion-alta-urgencia.html) | `Bundle` (transaction) | Evento alta. |
+| [Transacción de abandono](StructureDefinition-transaccion-abandono-urgencia.html) | `Bundle` (transaction) | Evento abandono. |
+| [Encuentro de urgencia](StructureDefinition-encuentro-urgencia.html) | `Encounter` | Episodio. Variantes por evento: [admisión](StructureDefinition-encuentro-urgencia-admision.html), [alta](StructureDefinition-encuentro-urgencia-alta.html), [abandono](StructureDefinition-encuentro-urgencia-abandono.html). |
+| [MINSAL Paciente](https://interoperabilidad.minsal.cl/fhir/ig/nid/0.4.6/StructureDefinition-MINSALPaciente.html) (NID) | `Patient` | Perfil nacional del NID, usado directamente. |
+| [MINSAL Prestador Organizacional](https://interoperabilidad.minsal.cl/fhir/ig/nid/0.4.6/StructureDefinition-MINSALPrestadorOrganizacional.html) (NID) | `Organization` | Perfil nacional del NID, usado directamente. Se identifica por código DEIS. |
+| [MINSAL Prestador Profesional](https://interoperabilidad.minsal.cl/fhir/ig/nid/0.4.6/StructureDefinition-MINSALPrestadorProfesional.html) (NID) | `Practitioner` | Perfil nacional del NID, usado directamente. Opcional en los mensajes. |
+| [Diagnóstico de urgencia](StructureDefinition-diagnostico-urgencia.html) | `Condition` | Hipótesis o diagnóstico de egreso. Basado en CL-Core `CoreDiagnosticoCl`. |
+| [Indicación de medicamento](StructureDefinition-indicacion-medicamento-urgencia.html) | `MedicationRequest` | Medicamentos indicados al alta. Opcional. |
+| [Documento de urgencia](StructureDefinition-documento-urgencia.html) | `DocumentReference` | Enlace al PDF del DAU. |
 
-## Alineación nacional
+## Cómo leer esta guía
 
-| Guía | Aplicación |
-|---|---|
-| CL-Core | Perfiles transversales chilenos para paciente, prestador y organización. |
-| MPI | Dependencia para identidad del paciente. |
-| LOINC | Signos vitales, mediciones y resultados observacionales. |
-| SNOMED CT | Procedimientos, conceptos clínicos y hallazgos. |
-| CIE-10 | Diagnósticos registrados al cierre. |
-| UCUM | Unidades de medida. |
+- [Modelo de eventos](modelo.html): qué contiene cada transacción y cómo se relacionan los recursos.
+- [Arquitectura](arquitectura.html): envío al Bus, validaciones y consulta desde la red.
+- [Casos de uso](casos-de-uso.html): escenarios de admisión, alta, fuga y consulta por otro establecimiento.
+- [Mapeo CMBD](mapeo-cmbd.html): correspondencia campo a campo entre el CMBD de Urgencia (DEIS) y FHIR.
+
+## Dependencias
+
+| Dependencia | Versión | Uso |
+|---|---|---|
+| FHIR R4 | `4.0.1` | Estándar base. |
+| CL-Core | `1.9.2` | Perfiles base de encuentro y diagnóstico. |
+| [NID](https://interoperabilidad.minsal.cl/fhir/ig/nid/0.4.6/artifacts.html) | `0.4.6` | Paciente, prestador profesional y prestador organizacional; terminología de previsión, tramo FONASA, leyes previsionales y título profesional. |
+| CIE-10 | — | Diagnósticos (preferente). |
+| SNOMED CT | — | Diagnósticos (alternativo). |
+| LOINC | — | Tipo de documento (`59258-4` Emergency department Discharge summary). |
+| MPI MINSAL | — | Resolución de identidad del paciente (dependencia externa). |

@@ -1,91 +1,75 @@
-# Casos de uso
-
-## Objetivo
-
-Describir el flujo mediante el cual el HIS/RCE envía la información de una atención de urgencia al Bus de Interoperabilidad para validación y publicación.
-
 ## Actores
 
 | Actor | Rol |
 |---|---|
-| Establecimiento de origen | Registra y envía la atención de urgencia. |
-| HIS / RCE | Genera la información de admisión, atención, solicitudes y egreso. |
-| Bus de Interoperabilidad | Coordina las validaciones y la publicación. |
-| Servicio Terminológico | Valida códigos, catálogos y unidades de medida. |
-| MPI | Valida la identidad del paciente y los identificadores nacionales. |
-| Repositorio FHIR | Conserva el documento DAU y sus recursos. |
-| Portal Ciudadano | Consume la información publicada. |
+| Establecimiento de urgencia (HIS/RCE) | Envía las transacciones de cada evento. |
+| Bus de Interoperabilidad | Valida y aplica las transacciones en el repositorio. |
+| Establecimiento de la red | Consulta para dar continuidad (APS, especialidad, otro hospital). |
+| HCC (Portal Ciudadano) | Muestra al paciente sus atenciones de urgencia. |
 
-## Puntos de integración
+## Caso 1: Admisión
 
-1. **Intercambio mediante el Bus de Interoperabilidad:** el sistema clínico de origen, como el HIS o RCE, genera y envía la información de la atención de urgencia al Bus para su validación y publicación.
+Una paciente llega por sus propios medios a urgencia del Hospital de Ejemplo con dolor abdominal.
 
-## Flujo general
+1. El administrativo registra la admisión en el HIS/RCE, que asigna el ID DAU `DAU-2026-000123`.
+2. El HIS/RCE envía la [transacción de admisión](Bundle-TransaccionAdmisionEj.html): `PUT Encounter?identifier=...|DAU-2026-000123` con el episodio en `in-progress`.
+3. El Bus valida, resuelve la identidad en MPI y crea el episodio.
+
+**Valor para la red:** el CESFAM de la paciente puede ver que está siendo atendida en urgencia.
+
+## Caso 2: Alta
+
+Tras la evaluación, la médica diagnostica gastritis aguda, indica omeprazol y da el alta a domicilio con control en su CESFAM.
+
+1. La médica registra el alta en el HIS/RCE, que genera el PDF del DAU.
+2. El HIS/RCE envía la [transacción de alta](Bundle-TransaccionAltaEj.html) con:
+   - el mismo `Encounter` (mismo ID DAU) en `finished`, con `period.end` y destino `05 Domicilio`;
+   - el diagnóstico de egreso en CIE-10;
+   - la indicación de omeprazol;
+   - el documento DAU con la URL del PDF.
+3. El `PUT` condicional actualiza el episodio creado en la admisión y lo cierra.
+
+**Valor para la red:** el CESFAM conoce el diagnóstico, el tratamiento indicado y puede descargar el DAU para el control. La paciente ve la atención y el documento en HCC.
+
+## Caso 3: Abandono (fuga)
+
+Días después, la paciente consulta por cefalea. Es evaluada, se registra una hipótesis diagnóstica y, mientras espera exámenes, se retira sin avisar.
+
+1. El equipo constata la ausencia y lo registra en el HIS/RCE.
+2. El HIS/RCE envía la [transacción de abandono](Bundle-TransaccionAbandonoEj.html) con el `Encounter` en `finished`, `period.end` = hora en que se constató el abandono y tipo `2 Abandono durante la atención médica (fuga)`, junto con la hipótesis diagnóstica.
+3. El Bus cierra el episodio.
+
+Si la paciente se hubiese retirado **antes** de ser evaluada, el tipo de abandono sería `1 NEA` y la transacción normalmente no incluiría diagnóstico.
+
+**Valor para la red:** un episodio sin alta es una alerta de continuidad. El CESFAM puede contactar a la paciente para asegurar su seguimiento.
+
+## Caso 4: Consulta por la red y por la paciente
+
+La paciente acude a su control en el CESFAM.
+
+1. El RCE del CESFAM busca las atenciones de urgencia de la paciente por RUN.
+2. Obtiene los dos episodios: el alta con diagnóstico y medicamento, y el abandono.
+3. Descarga el PDF del DAU desde `DocumentReference`.
+
+La paciente, por su parte, revisa en HCC (Portal Ciudadano) sus atenciones de urgencia y descarga el DAU.
 
 <div class="mermaid">
 sequenceDiagram
-    participant HIS as HIS / RCE
-    participant BUS as Bus de Interoperabilidad
-    participant TERM as Servicio Terminológico
-    participant MPI as MPI
-    participant REP as Repositorio FHIR
-    participant POR as Portal Ciudadano
+    participant HIS as HIS/RCE Hospital
+    participant BUS as Bus MINSAL
+    participant APS as RCE CESFAM
+    participant HCC as HCC (Portal Ciudadano)
 
-    HIS->>BUS: Información de atención de urgencia
-    BUS->>TERM: Validar códigos y unidades
-    TERM-->>BUS: Resultado terminológico
-    BUS->>MPI: Validar Patient contra MPI
-    MPI-->>BUS: Identidad validada
-    BUS->>BUS: Validar perfiles DAU y referencias
-    BUS->>REP: Publicar Bundle document y PDF, si existe
-    REP-->>POR: Datos disponibles
-    BUS-->>HIS: ACK / OperationOutcome
+    HIS->>BUS: Transacción admisión (PUT Encounter in-progress)
+    BUS-->>HIS: transaction-response
+    HIS->>BUS: Transacción alta (PUT Encounter finished, Condition, MedicationRequest, DocumentReference)
+    BUS-->>HIS: transaction-response
+    APS->>BUS: GET Encounter?patient.identifier=RUN
+    BUS-->>APS: Episodios de urgencia
+    APS->>BUS: GET DocumentReference?encounter=...
+    BUS-->>APS: URL del PDF
+    APS->>HIS: Descarga PDF (autenticado)
+    HCC->>BUS: GET Encounter / DocumentReference del paciente
+    BUS-->>HCC: Atenciones y documento
+    HCC->>HIS: Descarga PDF para el paciente
 </div>
-
-## Información enviada por el HIS/RCE
-
-| Grupo | Información |
-|---|---|
-| Admisión | Identificador DAU, código DEIS, fecha de admisión, procedencia y medio de llegada. |
-| Paciente | RUN, pasaporte u otro identificador, nombre, fecha de nacimiento, sexo y contacto. |
-| Sistema utilizado, nivel asignado, fecha/hora y profesional. |
-| Evaluación clínica | Anamnesis, examen físico, antecedentes, alergias y evolución clínica. |
-| Signos vitales | Frecuencia cardíaca, presión arterial, temperatura, frecuencia respiratoria, saturación, dolor, Glasgow y glicemia. |
-| Egreso | Condición, destino, hospitalización, traslado o NEA. |
-| Diagnósticos | Hipótesis, diagnóstico principal, diagnósticos secundarios, código y descripción. |
-| Solicitudes | Exámenes de laboratorio, imagenología, procedimientos o derivaciones solicitadas durante el episodio. |
-| Tratamientos | Medicamentos administrados, indicaciones y procedimientos realizados. |
-| Egreso | Condición, destino, hospitalización, traslado o NEA. |
-| Documento | Autor, fecha de emisión y PDF cuando corresponda. |
-
-## Caso de uso 1: Envío FHIR directo
-
-1. El HIS/RCE registra la atención de urgencia.
-2. Construye un `Bundle.type = document`.
-3. Incluye una `Composition` como primera entrada.
-4. Incluye `Patient`, `Encounter`, `Condition`, `Observation`, `Procedure`, `ServiceRequest`, medicamentos y `DocumentReference` cuando corresponda.
-5. Envía el documento al Bus mediante HTTP.
-6. El Bus valida la estructura, terminología e identidad del paciente.
-7. El Bus publica el documento y responde con el resultado de la operación.
-
-## Caso de uso 2: Publicación del documento DAU
-
-El repositorio conserva:
-
-- `Bundle` documental.
-- `Composition`.
-- Recursos clínicos referenciados.
-- Solicitudes de laboratorio o imagenología realizadas durante la atención.
-- PDF mediante `DocumentReference`, si fue generado.
-- Resultado de las validaciones realizadas.
-
-El documento DAU no contiene informes ni resultados de laboratorio o imagenología. Esos resultados pertenecen a sus respectivos flujos y guías de implementación.
-
-## Respuesta del Bus
-
-| Resultado | Respuesta |
-|---|---|
-| Documento válido | Respuesta HTTP exitosa o `ACK`. |
-| Error estructural | `OperationOutcome` o `NACK`. |
-| Código inválido | Rechazo con detalle terminológico. |
-| Identidad no validada | Documento retenido y respuesta de conciliación. |
