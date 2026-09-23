@@ -3,7 +3,10 @@
 //
 // Dentro de una transacción los recursos se referencian por su fullUrl (urn:uuid).
 // El servidor resuelve cada PUT condicional y reescribe esas referencias con el id real.
-// Los encuentros de un mismo episodio comparten Encounter.identifier (ID DAU).
+//
+// EpisodioDAU123EstadoAdmision y EpisodioDAU123EstadoAlta NO son dos encuentros:
+// son el mismo Encounter (ID DAU DAU-2026-000123) enviado en dos momentos.
+// El servidor crea el recurso con la admisión y lo actualiza con el alta.
 
 // ─────────────────────── Identificadores compartidos ───────────────────────
 
@@ -44,7 +47,7 @@ RuleSet: DatosAdmisionEpisodio1
 
 // ─────────────────────────────── Admisión ───────────────────────────────
 
-Instance: EncuentroAdmisionEj
+Instance: EpisodioDAU123EstadoAdmision
 InstanceOf: EncuentroUrgenciaAdmision
 Usage: #inline
 * insert DatosAdmisionEpisodio1
@@ -58,13 +61,13 @@ Description: "Admisión de la paciente a urgencia: abre el episodio DAU-2026-000
 * type = #transaction
 * insert EntradasActores
 * entry[encuentro].fullUrl = "urn:uuid:6f1c2a10-0010-4000-8000-000000000010"
-* entry[encuentro].resource = EncuentroAdmisionEj
+* entry[encuentro].resource = EpisodioDAU123EstadoAdmision
 * entry[encuentro].request.method = #PUT
 * entry[encuentro].request.url = "Encounter?identifier=https://hospital-ejemplo.cl/fhir/sid/dau|DAU-2026-000123"
 
 // ───────────────────────────────── Alta ─────────────────────────────────
 
-Instance: EncuentroAltaEj
+Instance: EpisodioDAU123EstadoAlta
 InstanceOf: EncuentroUrgenciaAlta
 Usage: #inline
 * insert DatosAdmisionEpisodio1
@@ -144,7 +147,7 @@ Description: "Alta a domicilio del episodio DAU-2026-000123 con diagnóstico, in
 * entry[profesional][0].request.method = #PUT
 * entry[profesional][0].request.url = "Practitioner?identifier=urn:oid:2.16.840.1.113883.2.22.1.152.787300|22222222-2"
 * entry[encuentro].fullUrl = "urn:uuid:6f1c2a10-0011-4000-8000-000000000011"
-* entry[encuentro].resource = EncuentroAltaEj
+* entry[encuentro].resource = EpisodioDAU123EstadoAlta
 * entry[encuentro].request.method = #PUT
 * entry[encuentro].request.url = "Encounter?identifier=https://hospital-ejemplo.cl/fhir/sid/dau|DAU-2026-000123"
 * entry[diagnostico][0].fullUrl = "urn:uuid:6f1c2a10-0020-4000-8000-000000000020"
@@ -162,7 +165,7 @@ Description: "Alta a domicilio del episodio DAU-2026-000123 con diagnóstico, in
 
 // ─────────────────────────────── Abandono ───────────────────────────────
 
-Instance: EncuentroAbandonoEj
+Instance: EpisodioDAU456EstadoAbandono
 InstanceOf: EncuentroUrgenciaAbandono
 Usage: #inline
 * identifier[0].system = "https://hospital-ejemplo.cl/fhir/sid/dau"
@@ -200,7 +203,7 @@ Description: "Cierre del episodio DAU-2026-000456 porque la paciente se retiró 
 * type = #transaction
 * insert EntradasActores
 * entry[encuentro].fullUrl = "urn:uuid:6f1c2a10-0012-4000-8000-000000000012"
-* entry[encuentro].resource = EncuentroAbandonoEj
+* entry[encuentro].resource = EpisodioDAU456EstadoAbandono
 * entry[encuentro].request.method = #PUT
 * entry[encuentro].request.url = "Encounter?identifier=https://hospital-ejemplo.cl/fhir/sid/dau|DAU-2026-000456"
 * entry[diagnostico][0].fullUrl = "urn:uuid:6f1c2a10-0021-4000-8000-000000000021"

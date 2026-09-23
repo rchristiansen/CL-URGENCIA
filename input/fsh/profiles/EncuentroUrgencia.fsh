@@ -1,7 +1,9 @@
 // El Encounter es el recurso central: un solo episodio desde la admisión hasta el
-// alta o el abandono. Cada evento reenvía el mismo Encounter (mismo identifier)
-// con su estado actualizado. Los perfiles por evento solo agregan las reglas de
-// ese momento sobre el perfil base.
+// alta o el abandono. Cada evento reenvía el mismo Encounter (mismo ID DAU)
+// con su estado actualizado.
+//
+// Los tres perfiles derivados NO representan recursos distintos: son las reglas
+// que debe cumplir ese único Encounter en cada momento (admisión, alta, abandono).
 
 Invariant: urg-enc-1
 Description: "Un episodio finalizado debe informar la fecha y hora de término (period.end)."
@@ -75,8 +77,8 @@ Description: "Episodio de atención en una unidad de urgencia, desde la admisió
 Profile: EncuentroUrgenciaAdmision
 Parent: EncuentroUrgencia
 Id: encuentro-urgencia-admision
-Title: "Encuentro de urgencia - Admisión"
-Description: "Estado del episodio al momento de la admisión: abierto, sin fecha de término ni destino."
+Title: "Encuentro de urgencia - estado en la admisión"
+Description: "Reglas del episodio de urgencia al momento de la admisión: abierto (in-progress), sin fecha de término ni destino. No es un recurso distinto: es el mismo Encounter que después se actualiza con el alta o el abandono."
 * ^status = #draft
 * status = #in-progress
 * period.end 0..0
@@ -85,8 +87,8 @@ Description: "Estado del episodio al momento de la admisión: abierto, sin fecha
 Profile: EncuentroUrgenciaAlta
 Parent: EncuentroUrgencia
 Id: encuentro-urgencia-alta
-Title: "Encuentro de urgencia - Alta"
-Description: "Estado del episodio al alta: cerrado, con fecha de alta, destino indicado y diagnóstico de egreso."
+Title: "Encuentro de urgencia - estado en el alta"
+Description: "Reglas del episodio de urgencia al momento del alta: cerrado (finished), con fecha de alta, destino y diagnóstico de egreso. No es un recurso distinto: es el mismo Encounter creado en la admisión (mismo ID DAU), actualizado."
 * ^status = #draft
 * status = #finished
 * period.end 1..1
@@ -98,8 +100,8 @@ Description: "Estado del episodio al alta: cerrado, con fecha de alta, destino i
 Profile: EncuentroUrgenciaAbandono
 Parent: EncuentroUrgencia
 Id: encuentro-urgencia-abandono
-Title: "Encuentro de urgencia - Abandono"
-Description: "Estado del episodio cuando el paciente se retira voluntariamente sin alta médica (fuga o NEA): cerrado, con la fecha y hora en que se constató el abandono y el tipo de abandono."
+Title: "Encuentro de urgencia - estado en el abandono"
+Description: "Reglas del episodio de urgencia cuando el paciente se retira voluntariamente sin alta médica (fuga o NEA): cerrado (finished), con la fecha y hora en que se constató el abandono y el tipo de abandono. No es un recurso distinto: es el mismo Encounter creado en la admisión (mismo ID DAU), actualizado."
 * ^status = #draft
 * status = #finished
 * period.end 1..1

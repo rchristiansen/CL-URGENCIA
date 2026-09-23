@@ -1,3 +1,35 @@
+## Un episodio, un Encounter
+
+Cada atención de urgencia es **un solo `Encounter`** durante toda su vida. Las transacciones de admisión, alta o abandono **no crean encuentros nuevos**: envían el mismo `Encounter`, identificado por el mismo **ID DAU**, con su estado actualizado.
+
+```text
+10:00  Transacción de admisión
+       PUT Encounter?identifier=[sistema DAU]|DAU-2026-000123
+       No existe → el servidor lo CREA ......... Encounter/abc  v1  status = in-progress
+
+12:30  Transacción de alta
+       PUT Encounter?identifier=[sistema DAU]|DAU-2026-000123
+       Ya existe → el servidor lo ACTUALIZA .... Encounter/abc  v2  status = finished
+                                                               + period.end, destino, diagnóstico
+```
+
+En el repositorio queda **un solo recurso** con dos versiones. El historial (`GET Encounter/abc/_history`) muestra cómo cambió.
+
+<div class="mermaid">
+sequenceDiagram
+    participant HIS as HIS/RCE
+    participant REP as Repositorio FHIR
+    HIS->>REP: Admisión: PUT Encounter?identifier=…|DAU-2026-000123 (in-progress)
+    REP-->>HIS: 201 Created → Encounter/abc v1
+    HIS->>REP: Alta: PUT Encounter?identifier=…|DAU-2026-000123 (finished)
+    REP-->>HIS: 200 OK → Encounter/abc v2
+</div>
+
+Por eso la guía tiene tres perfiles de `Encounter` y dos ejemplos del mismo episodio:
+
+- **Perfiles** [estado en la admisión](StructureDefinition-encuentro-urgencia-admision.html), [estado en el alta](StructureDefinition-encuentro-urgencia-alta.html) y [estado en el abandono](StructureDefinition-encuentro-urgencia-abandono.html): son las **reglas** que debe cumplir el mismo `Encounter` en cada momento. Por ejemplo, un alta sin fecha de término o un abandono con destino "domicilio" se rechazan.
+- **Ejemplos** `EpisodioDAU123EstadoAdmision` y `EpisodioDAU123EstadoAlta`: son **dos fotos del mismo recurso**, tal como lo envía el HIS a las 10:00 y a las 12:30. Tienen el mismo ID DAU.
+
 ## Estructura de una transacción
 
 Los tres eventos usan la misma estructura: un `Bundle` de tipo `transaction` en que **cada entrada es un `PUT` condicional por identificador**.
@@ -16,7 +48,7 @@ Bundle (type = transaction)
 
 El `PUT` condicional **crea** el recurso si no existe y lo **actualiza** si ya existe. De ahí salen tres propiedades del modelo:
 
-- **Correlación sin lógica adicional:** la admisión crea el `Encounter`; el alta o el abandono actualizan ese mismo `Encounter`, porque comparten el ID DAU.
+- **Correlación sin lógica adicional:** la admisión crea el `Encounter`; el alta o el abandono actualizan ese mismo `Encounter`, porque comparten el ID DAU (ver [Un episodio, un Encounter](#un-episodio-un-encounter)).
 - **Reenvío seguro:** si el HIS/RCE reintenta una transacción, no se duplican pacientes, episodios ni diagnósticos.
 - **Transacción autocontenida:** trae siempre paciente, establecimiento y encuentro. Un alta sin admisión previa crea el episodio igual.
 
