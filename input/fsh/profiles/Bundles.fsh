@@ -1,4 +1,4 @@
-// Transacciones FHIR (Bundle.type = transaction) para los tres eventos de urgencia.
+// Bundle de tipo transaction para los tres eventos de urgencia.
 // Cada transacción es autocontenida: trae el paciente, el establecimiento y el
 // encuentro, de modo que el servidor puede procesarla aunque no haya recibido
 // los eventos anteriores.
@@ -13,11 +13,11 @@ Description: "Todas las entradas deben usar PUT condicional por identificador: r
 Severity: #error
 Expression: "entry.all(request.method = 'PUT' and request.url.contains('?identifier=') and request.url.contains('|'))"
 
-Profile: TransaccionUrgencia
+Profile: BundleUrgencia
 Parent: Bundle
-Id: transaccion-urgencia
-Title: "Transacción de urgencia (base)"
-Description: "Estructura común de las tres transacciones de urgencia. No se usa directamente: se usa el perfil del evento correspondiente."
+Id: bundle-urgencia
+Title: "Bundle de urgencia (base)"
+Description: "Estructura común de los tres Bundle de urgencia. No se usa directamente: se usa el perfil del evento correspondiente."
 * ^status = #draft
 * ^abstract = true
 * obeys urg-tx-put-condicional
@@ -42,20 +42,20 @@ Description: "Estructura común de las tres transacciones de urgencia. No se usa
 * entry[establecimiento] ^short = "Establecimiento emisor y, si corresponde, establecimiento de destino"
 * entry[profesional].resource only $MINSALPrestadorProfesional
 
-Profile: TransaccionAdmisionUrgencia
-Parent: TransaccionUrgencia
-Id: transaccion-admision-urgencia
-Title: "Transacción de admisión de urgencia"
+Profile: BundleAdmisionUrgencia
+Parent: BundleUrgencia
+Id: bundle-admision-urgencia
+Title: "Bundle de admisión de urgencia"
 Description: "Evento admisión: el paciente es admitido en urgencia. Abre el episodio (Encounter en in-progress) y avisa a la red que el paciente se encuentra en atención."
 * ^status = #draft
 * ^abstract = false
 * entry contains encuentro 1..1 MS
 * entry[encuentro].resource only EncuentroUrgenciaAdmision
 
-Profile: TransaccionAltaUrgencia
-Parent: TransaccionUrgencia
-Id: transaccion-alta-urgencia
-Title: "Transacción de alta de urgencia"
+Profile: BundleAltaUrgencia
+Parent: BundleUrgencia
+Id: bundle-alta-urgencia
+Title: "Bundle de alta de urgencia"
 Description: "Evento alta: el profesional da el alta de urgencia. Cierra el episodio (Encounter en finished) e informa diagnóstico de egreso, destino, medicamentos indicados y el documento clínico en PDF."
 * ^status = #draft
 * ^abstract = false
@@ -69,10 +69,10 @@ Description: "Evento alta: el profesional da el alta de urgencia. Cierra el epis
 * entry[medicamento].resource only IndicacionMedicamentoUrgencia
 * entry[documento].resource only DocumentoUrgencia
 
-Profile: TransaccionAbandonoUrgencia
-Parent: TransaccionUrgencia
-Id: transaccion-abandono-urgencia
-Title: "Transacción de abandono de urgencia"
+Profile: BundleAbandonoUrgencia
+Parent: BundleUrgencia
+Id: bundle-abandono-urgencia
+Title: "Bundle de abandono de urgencia"
 Description: "Evento abandono: el paciente se retira voluntariamente sin alta médica (fuga o NEA). Cierra el episodio (Encounter en finished). Si alcanzó a ser evaluado, puede incluir la hipótesis diagnóstica y el documento clínico."
 * ^status = #draft
 * ^abstract = false

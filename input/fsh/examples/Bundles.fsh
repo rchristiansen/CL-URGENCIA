@@ -53,10 +53,10 @@ Usage: #inline
 * insert DatosAdmisionEpisodio1
 * status = #in-progress
 
-Instance: TransaccionAdmisionEj
-InstanceOf: TransaccionAdmisionUrgencia
+Instance: BundleAdmisionEj
+InstanceOf: BundleAdmisionUrgencia
 Usage: #example
-Title: "Transacción de admisión"
+Title: "Bundle de admisión"
 Description: "Admisión de la paciente a urgencia: abre el episodio DAU-2026-000123."
 * type = #transaction
 * insert EntradasActores
@@ -131,10 +131,10 @@ Usage: #inline
 * content[0].attachment.creation = "2026-09-09T12:30:00-03:00"
 * context.encounter[0].reference = "urn:uuid:6f1c2a10-0011-4000-8000-000000000011"
 
-Instance: TransaccionAltaEj
-InstanceOf: TransaccionAltaUrgencia
+Instance: BundleAltaEj
+InstanceOf: BundleAltaUrgencia
 Usage: #example
-Title: "Transacción de alta"
+Title: "Bundle de alta"
 Description: "Alta a domicilio del episodio DAU-2026-000123 con diagnóstico, indicación de medicamento y PDF."
 * type = #transaction
 * insert EntradasActores
@@ -195,10 +195,10 @@ Usage: #inline
 * encounter.reference = "urn:uuid:6f1c2a10-0012-4000-8000-000000000012"
 * recordedDate = "2026-09-20T22:00:00-03:00"
 
-Instance: TransaccionAbandonoEj
-InstanceOf: TransaccionAbandonoUrgencia
+Instance: BundleAbandonoEj
+InstanceOf: BundleAbandonoUrgencia
 Usage: #example
-Title: "Transacción de abandono (fuga)"
+Title: "Bundle de abandono (fuga)"
 Description: "Cierre del episodio DAU-2026-000456 porque la paciente se retiró sin alta médica."
 * type = #transaction
 * insert EntradasActores

@@ -12,7 +12,7 @@
 
 ## Flujo
 
-<div class="mermaid">
+<div class="diagrama-urgencia">
 flowchart LR
     HIS["HIS / RCE"] -->|"POST transaction<br/>admisión · alta · abandono"| BUS["Bus de<br/>Interoperabilidad"]
     BUS --> VAL["Validación<br/>perfil + terminología"]
@@ -62,7 +62,7 @@ Si el HIS/RCE no recibe respuesta, puede **reenviar la misma transacción**: el 
 
 ## Procesamiento en el Bus
 
-1. Validar el `Bundle` contra el perfil del evento ([admisión](StructureDefinition-transaccion-admision-urgencia.html), [alta](StructureDefinition-transaccion-alta-urgencia.html) o [abandono](StructureDefinition-transaccion-abandono-urgencia.html)).
+1. Validar el `Bundle` contra el perfil del evento ([admisión](StructureDefinition-bundle-admision-urgencia.html), [alta](StructureDefinition-bundle-alta-urgencia.html) o [abandono](StructureDefinition-bundle-abandono-urgencia.html)).
 2. Validar los códigos contra el Servidor Terminológico.
 3. Resolver el `Patient` contra MPI y agregar el identificador MPI.
 4. Aplicar la transacción en el repositorio. Cada `PUT` condicional crea o actualiza el recurso según su identificador.
@@ -107,3 +107,5 @@ El PDF se descarga desde `DocumentReference.content.attachment.url`, publicado p
 - La URL del PDF debe exigir autenticación; no debe ser pública.
 - HCC muestra al paciente solo sus propias atenciones.
 - El acceso de la red se rige por las políticas de acceso y el consentimiento del paciente cuando corresponda.
+
+{% include diagramas.html %}

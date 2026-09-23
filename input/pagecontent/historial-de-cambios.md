@@ -26,7 +26,7 @@ Rediseño de la guía hacia un **modelo de eventos mínimo** orientado a la cont
 
 Nuevos:
 
-- `TransaccionAdmisionUrgencia`, `TransaccionAltaUrgencia`, `TransaccionAbandonoUrgencia` (y su base `TransaccionUrgencia`).
+- `BundleAdmisionUrgencia`, `BundleAltaUrgencia`, `BundleAbandonoUrgencia` (y su base `BundleUrgencia`).
 - `EncuentroUrgencia` y sus variantes por evento: `EncuentroUrgenciaAdmision`, `EncuentroUrgenciaAlta`, `EncuentroUrgenciaAbandono`.
 - `IndicacionMedicamentoUrgencia` (`MedicationRequest`) con nombre y posología en texto libre.
 

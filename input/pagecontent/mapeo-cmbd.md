@@ -115,7 +115,7 @@ Equivalencia TIPO_COD_DIAG → `Condition.code.coding.system`:
 
 | Campo CMBD | Elemento FHIR | Evento |
 |---|---|---|
-| ABANDONO | Transacción de abandono + `Encounter.hospitalization.dischargeDisposition` ([CSTipoAbandono](CodeSystem-tipo-abandono.html)) | Abandono |
+| ABANDONO | Bundle de abandono + `Encounter.hospitalization.dischargeDisposition` ([CSTipoAbandono](CodeSystem-tipo-abandono.html)) | Abandono |
 
 ## Campos no incluidos
 

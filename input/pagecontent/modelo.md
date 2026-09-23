@@ -1,13 +1,13 @@
 ## Un episodio, un Encounter
 
-Cada atención de urgencia es **un solo `Encounter`** durante toda su vida. Las transacciones de admisión, alta o abandono **no crean encuentros nuevos**: envían el mismo `Encounter`, identificado por el mismo **ID DAU**, con su estado actualizado.
+Cada atención de urgencia es **un solo `Encounter`** durante toda su vida. Los Bundle de admisión, alta o abandono **no crean encuentros nuevos**: envían el mismo `Encounter`, identificado por el mismo **ID DAU**, con su estado actualizado.
 
 ```text
-10:00  Transacción de admisión
+10:00  Bundle de admisión
        PUT Encounter?identifier=[sistema DAU]|DAU-2026-000123
        No existe → el servidor lo CREA ......... Encounter/abc  v1  status = in-progress
 
-12:30  Transacción de alta
+12:30  Bundle de alta
        PUT Encounter?identifier=[sistema DAU]|DAU-2026-000123
        Ya existe → el servidor lo ACTUALIZA .... Encounter/abc  v2  status = finished
                                                                + period.end, destino, diagnóstico
@@ -15,7 +15,7 @@ Cada atención de urgencia es **un solo `Encounter`** durante toda su vida. Las 
 
 En el repositorio queda **un solo recurso** con dos versiones. El historial (`GET Encounter/abc/_history`) muestra cómo cambió.
 
-<div class="mermaid">
+<div class="diagrama-urgencia">
 sequenceDiagram
     participant HIS as HIS/RCE
     participant REP as Repositorio FHIR
@@ -54,7 +54,7 @@ El `PUT` condicional **crea** el recurso si no existe y lo **actualiza** si ya e
 
 Dentro de la transacción los recursos se referencian entre sí por su `fullUrl` (`urn:uuid:...`). El servidor reemplaza esas referencias por los ids reales al procesarla.
 
-<div class="mermaid">
+<div class="diagrama-urgencia">
 flowchart LR
     E["Encounter<br/>episodio urgencia"] -->|subject| P["Patient<br/>MINSALPaciente"]
     E -->|serviceProvider| O["Organization<br/>MINSALPrestadorOrganizacional"]
@@ -71,9 +71,9 @@ No hay un recurso que diga "esto es un alta". El evento se deduce del estado del
 
 | Evento | Perfil | `Encounter.status` | `Encounter.hospitalization.dischargeDisposition` |
 |---|---|---|---|
-| Admisión | [Transacción de admisión](StructureDefinition-transaccion-admision-urgencia.html) | `in-progress` | No se envía |
-| Alta | [Transacción de alta](StructureDefinition-transaccion-alta-urgencia.html) | `finished` | [Destino de alta](ValueSet-vs-destino-alta.html) |
-| Abandono | [Transacción de abandono](StructureDefinition-transaccion-abandono-urgencia.html) | `finished` | [Tipo de abandono](ValueSet-vs-tipo-abandono.html) |
+| Admisión | [Bundle de admisión](StructureDefinition-bundle-admision-urgencia.html) | `in-progress` | No se envía |
+| Alta | [Bundle de alta](StructureDefinition-bundle-alta-urgencia.html) | `finished` | [Destino de alta](ValueSet-vs-destino-alta.html) |
+| Abandono | [Bundle de abandono](StructureDefinition-bundle-abandono-urgencia.html) | `finished` | [Tipo de abandono](ValueSet-vs-tipo-abandono.html) |
 
 Quien necesite reaccionar a un evento (por ejemplo, avisar al CESFAM de un alta o de una fuga) lo hace suscribiéndose a los cambios de `Encounter` en el repositorio.
 
@@ -127,7 +127,7 @@ El ID DAU debe ser **único** en el establecimiento, **no reutilizarse** nunca y
 
 ## Fuga y NEA
 
-Ambos son **abandono voluntario** y se informan con la transacción de abandono. Se distinguen por el [tipo de abandono](CodeSystem-tipo-abandono.html):
+Ambos son **abandono voluntario** y se informan con la Bundle de abandono. Se distinguen por el [tipo de abandono](CodeSystem-tipo-abandono.html):
 
 | Código | Significado | Cuándo |
 |---|---|---|
@@ -146,3 +146,5 @@ Para mantener el modelo mínimo, los siguientes datos **no** se envían como rec
 - Procedimientos y medicamentos administrados durante la atención.
 
 El modelo puede crecer agregando recursos a las transacciones sin cambiar su núcleo (paciente, establecimiento, encuentro, documento).
+
+{% include diagramas.html %}

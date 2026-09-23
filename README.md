@@ -27,9 +27,9 @@ El `Encounter` es el recurso central: un único episodio identificado por el **I
 
 | Perfil | Recurso | Uso |
 |---|---|---|
-| `TransaccionAdmisionUrgencia` | Bundle (transaction) | Evento admisión. |
-| `TransaccionAltaUrgencia` | Bundle (transaction) | Evento alta. |
-| `TransaccionAbandonoUrgencia` | Bundle (transaction) | Evento abandono. |
+| `BundleAdmisionUrgencia` | Bundle (transaction) | Evento admisión. |
+| `BundleAltaUrgencia` | Bundle (transaction) | Evento alta. |
+| `BundleAbandonoUrgencia` | Bundle (transaction) | Evento abandono. |
 | `EncuentroUrgencia` (+ `Admision`, `Alta`, `Abandono`) | Encounter | Episodio de urgencia. |
 | `MINSALPaciente` (NID) | Patient | Perfil del NID, usado directamente. |
 | `MINSALPrestadorOrganizacional` (NID) | Organization | Perfil del NID, usado directamente. |
@@ -43,10 +43,10 @@ El `Encounter` es el recurso central: un único episodio identificado por el **I
 ```text
 input/fsh/
 ├── aliases.fsh
-├── profiles/      EncuentroUrgencia.fsh · Clinicos.fsh · Transacciones.fsh
+├── profiles/      EncuentroUrgencia.fsh · Clinicos.fsh · Bundles.fsh
 ├── extensions/    Extensiones.fsh
 ├── terminology/   CodeSystems.fsh · ValueSets.fsh
-└── examples/      Actores.fsh · Transacciones.fsh
+└── examples/      Actores.fsh · Bundles.fsh
 input/pagecontent/ index · modelo · arquitectura · casos-de-uso · mapeo-cmbd · historial-de-cambios
 ```
 

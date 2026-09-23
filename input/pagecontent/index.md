@@ -23,7 +23,7 @@ La atención de urgencia se informa mediante **tres transacciones FHIR** (`Bundl
 
 Todo episodio abre con una **admisión** y cierra con un **alta** o un **abandono**.
 
-<div class="mermaid">
+<div class="diagrama-urgencia">
 stateDiagram-v2
     direction LR
     [*] --> EnAtencion: Admisión
@@ -36,7 +36,7 @@ stateDiagram-v2
 
 ## Flujo general
 
-<div class="mermaid">
+<div class="diagrama-urgencia">
 flowchart LR
     HIS["HIS / RCE<br/>urgencia"] -->|"transacción FHIR<br/>admisión · alta · abandono"| BUS["Bus de Interoperabilidad<br/>MINSAL"]
     BUS --> REP["Repositorio FHIR"]
@@ -63,9 +63,9 @@ DocumentReference .. ¿Dónde está el documento clínico completo? → PDF
 
 | Perfil | Recurso | Uso |
 |---|---|---|
-| [Transacción de admisión](StructureDefinition-transaccion-admision-urgencia.html) | `Bundle` (transaction) | Evento admisión. |
-| [Transacción de alta](StructureDefinition-transaccion-alta-urgencia.html) | `Bundle` (transaction) | Evento alta. |
-| [Transacción de abandono](StructureDefinition-transaccion-abandono-urgencia.html) | `Bundle` (transaction) | Evento abandono. |
+| [Bundle de admisión](StructureDefinition-bundle-admision-urgencia.html) | `Bundle` (transaction) | Evento admisión. |
+| [Bundle de alta](StructureDefinition-bundle-alta-urgencia.html) | `Bundle` (transaction) | Evento alta. |
+| [Bundle de abandono](StructureDefinition-bundle-abandono-urgencia.html) | `Bundle` (transaction) | Evento abandono. |
 | [Encuentro de urgencia](StructureDefinition-encuentro-urgencia.html) | `Encounter` | Episodio. Variantes por evento: [admisión](StructureDefinition-encuentro-urgencia-admision.html), [alta](StructureDefinition-encuentro-urgencia-alta.html), [abandono](StructureDefinition-encuentro-urgencia-abandono.html). |
 | [MINSAL Paciente](https://interoperabilidad.minsal.cl/fhir/ig/nid/0.4.6/StructureDefinition-MINSALPaciente.html) (NID) | `Patient` | Perfil nacional del NID, usado directamente. |
 | [MINSAL Prestador Organizacional](https://interoperabilidad.minsal.cl/fhir/ig/nid/0.4.6/StructureDefinition-MINSALPrestadorOrganizacional.html) (NID) | `Organization` | Perfil nacional del NID, usado directamente. Se identifica por código DEIS. |
@@ -92,3 +92,5 @@ DocumentReference .. ¿Dónde está el documento clínico completo? → PDF
 | SNOMED CT | — | Diagnósticos (alternativo). |
 | LOINC | — | Tipo de documento (`59258-4` Emergency department Discharge summary). |
 | MPI MINSAL | — | Resolución de identidad del paciente (dependencia externa). |
+
+{% include diagramas.html %}
