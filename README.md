@@ -1,9 +1,3 @@
-La guía permite recibir información desde sistemas que generan recursos FHIR R4 y establece un modelo clínico interoperable común para la atención de urgencia. Este modelo incluye la identificación del paciente, el episodio de atención, la evaluación clínica, las observaciones clínicas, los diagnósticos, las solicitudes, los procedimientos, los tratamientos y el egreso.
-| Fase 1 | Documento DAU al egreso, identificación del paciente, episodio de atención, motivo de consulta, evaluación clínica, signos vitales, diagnósticos, solicitudes, tratamientos, procedimientos, destino e indicaciones de alta, NEA | Perfiles y ejemplo documental implementados; pendientes de validación clínica e institucional |
-| `ObservacionUrgenciaDAU` | Observation | Signos vitales, escalas y otras observaciones clínicas. |
-| Arquitectura | Sistemas participantes, flujo HIS/RCE–Bus, terminología, MPI, NID y publicación. |
-| Terminología | Diagnósticos, procedimientos, estados de egreso, NEA y códigos clínicos. |
-- Terminologías clínicas aplicables a diagnósticos, procedimientos, medicamentos, destinos, NEA y estados de atención.
 # Guía de Implementación FHIR - Urgencia (DAU)
 
 Guía de Implementación (IG) FHIR R4 para el intercambio del Documento de Atención de Urgencia (DAU) en Chile. Define la representación de la atención de urgencia, desde la información clínica registrada en el HIS/RCE del establecimiento hasta su validación e interoperabilidad mediante el Bus de Interoperabilidad de MINSAL.
